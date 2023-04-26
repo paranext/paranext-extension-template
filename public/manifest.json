@@ -1,0 +1,9 @@
+{
+  "name": "paranext-extension-template",
+  "version": "0.0.1",
+  "description": "Extension template for Paranext. Powered by Vite",
+  "author": "Paranext",
+  "license": "MIT",
+  "main": "paranext-extension-template.js",
+  "activationEvents": []
+}
