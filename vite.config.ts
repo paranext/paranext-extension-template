@@ -45,8 +45,8 @@ export default defineConfig({
       entry: path.resolve(__dirname, "lib/main.ts"),
       // The output file name for the extension (file extension is appended)
       fileName: "paranext-extension-template",
-      // Output to es format as Paranext supports it
-      formats: ["es"],
+      // Output to cjs format as that's what Paranext supports
+      formats: ["cjs"],
     },
     rollupOptions: {
       // Do not bundle papi because it will be imported in Paranext

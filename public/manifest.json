@@ -4,6 +4,6 @@
   "description": "Extension template for Paranext. Powered by Vite",
   "author": "Paranext",
   "license": "MIT",
-  "main": "paranext-extension-template.js",
+  "main": "paranext-extension-template.ts",
   "activationEvents": []
 }
