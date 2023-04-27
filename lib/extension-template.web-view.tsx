@@ -26,7 +26,7 @@ function ExtensionTemplateReact() {
 
   return (
     <>
-      <div>Extension Template React</div>
+      <div className="title">Extension Template <span className="framework">React</span></div>
       <div>{latestVerseText}</div>
       <div>
         <Button

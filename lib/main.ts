@@ -2,12 +2,11 @@ import papi from "papi";
 import IDataProviderEngine from "shared/models/data-provider-engine.model";
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
 import extensionTemplateReact from "./extension-template.web-view";
+import extensionTemplateReactStyles from "./extension-template.web-view.scss?inline";
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
 import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
-import IDataProvider, {
-  DataProviderSubscriber,
-} from "shared/models/data-provider.interface";
 import type { WebViewContentType } from "shared/data/web-view.model";
+import { DataProvider } from "shared/models/data-provider.model";
 
 const { logger } = papi;
 
@@ -20,11 +19,8 @@ const unsubscribers = [];
 export type QuickVerseSetData = string | { text: string; isHeresy: boolean };
 
 export interface QuickVerseDataProvider
-  extends IDataProvider<string, string, QuickVerseSetData> {
-  subscribe: DataProviderSubscriber<string, string>;
-  set(selector: string, data: QuickVerseSetData): Promise<boolean>;
+  extends DataProvider<string, string, QuickVerseSetData> {
   setHeresy(verseRef: string, verseText: string): Promise<boolean>;
-  get(selector: string): Promise<string>;
 }
 
 class QuickVerseDataProviderEngine
@@ -159,6 +155,7 @@ export async function activate() {
   papi.webViews.addWebView({
     componentName: "ExtensionTemplateReact",
     contents: extensionTemplateReact,
+    styles: extensionTemplateReactStyles,
   });
 
   papi.webViews.addWebView({
