@@ -15,8 +15,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["papi-dts"]
+    "types": ["papi-dts"],
+    "paths": {
+      "extension-types": ["./public/paranext-extension-template"]
+    }
   },
-  "include": ["lib"],
+  "include": ["lib", "public/paranext-extension-template.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

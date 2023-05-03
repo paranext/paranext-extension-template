@@ -1,6 +1,6 @@
 import papi from "papi";
 import React from "react";
-import { QuickVerseDataProvider } from "./main";
+import { QuickVerseDataProvider } from "extension-types";
 
 const { useState } = React;
 const {
@@ -15,7 +15,7 @@ function ExtensionTemplateReact() {
   const [clicks, setClicks] = useState(0);
 
   const quickVerseDataProvider = useDataProvider<QuickVerseDataProvider>(
-    "quick-verse.quick-verse"
+    "paranext-extension-template.quick-verse"
   );
 
   const [latestVerseText] = useData(
