@@ -10,8 +10,8 @@ import { importManager } from "rollup-plugin-import-manager";
  * HTML Web Views should be named <name>.web-view.ejs
  *  - Note: the HTML web views are .ejs files because rollup was not recognizing them to have exports for some reason.
  */
-const webViewGlob = "**/*.web-view.(tsx|ejs)";
-const webViewTsxGlob = "**/*.web-view.tsx";
+const webViewGlob = "../**/*.web-view.(tsx|ejs)";
+const webViewTsxGlob = "../**/*.web-view.tsx";
 
 /** Modules that Paranext supplies so extensions can use them easily */
 const paranextProvidedModules = ["react", "react-dom/client", "papi"];
@@ -42,7 +42,7 @@ export default defineConfig({
     // This project is a library as it is being used in Paranext
     lib: {
       // The main entry file of the extension
-      entry: path.resolve(__dirname, "lib/main.ts"),
+      entry: path.resolve(__dirname, "../lib/main.ts"),
       // The output file name for the extension (file extension is appended)
       fileName: "paranext-extension-template",
       // Output to cjs format as that's what Paranext supports
@@ -52,6 +52,6 @@ export default defineConfig({
       // Do not bundle papi because it will be imported in Paranext
       external: paranextProvidedModules,
     },
-    sourcemap: 'inline',
+    sourcemap: true,
   },
 });

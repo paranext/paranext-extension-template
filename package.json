@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "build:vite": "vite build",
-    "start:vite": "vite build --watch",
+    "build:vite": "vite build --config vite/vite.config.ts",
+    "start:vite": "vite build --watch --config vite/vite.config.ts",
     "lint": "tsc",
     "start:core": "cd ../paranext-core && npm run start",
     "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:start:vite\" \"npm:start:core\""
