@@ -7,7 +7,7 @@
     "start:vite": "vite build --watch",
     "lint": "tsc",
     "start:core": "cd ../paranext-core && npm run start",
-    "start": "cross-env MAIN_ARGS=\"--extensionDirs $INIT_CWD/dist\" concurrently \"npm:start:vite\" \"npm:start:core\""
+    "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:start:vite\" \"npm:start:core\""
   },
   "dependencies": {
     "react": "^18.2.0",
