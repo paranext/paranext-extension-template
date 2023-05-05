@@ -21,6 +21,14 @@
         "runtimeArgs": ["run", "build:vite"]
       },
       {
+        "name": "Build Extension 2",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeArgs": ["run", "build:vite2"]
+      },
+      {
         "name": "Debug Paranext Core",
         "type": "node",
         "request": "launch",

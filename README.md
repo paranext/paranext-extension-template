@@ -51,9 +51,9 @@ To build the extension once:
 
 This extension template is built by Vite in two steps: a WebView transpilation step and a packaging step:
 
-## Build 1: WebView transpilation
+## Build 1: TypeScript WebView transpilation
 
-Vite prepares WebViews for use and outputs them into the `temp` folder:
+Vite prepares TypeScript WebViews for use and outputs them into `temp-vite` folders adjacent to the WebView files:
 - Formats WebViews to match how they should look to work in Paranext
 - Transpiles React/TypeScript WebViews into JavaScript
 - Packages dependencies into the WebViews

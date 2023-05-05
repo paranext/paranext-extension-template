@@ -1,5 +1,5 @@
 /**
- * First Vite build step for transpiling WebViews
+ * First Vite build step for transpiling TypeScript WebViews
  */
 
 import { defineConfig } from "vite";
@@ -9,13 +9,13 @@ import { importManager } from "rollup-plugin-import-manager";
 import {
   getFileExtensionByModuleFormat,
   paranextProvidedModules,
-  webViewGlob,
+  webViewTempDir,
   webViewTsxGlob,
 } from "./vite.util";
 import { globSync } from "glob";
 
-/** List of WebView files to transpile */
-const webViews = globSync(webViewGlob);
+/** List of TypeScript WebView files to transpile */
+const webViews = globSync(webViewTsxGlob, { ignore: "node_modules/**" });
 console.log(JSON.stringify(webViews));
 
 /** Tracks which entry file we're working with in determining the file name. */
@@ -39,7 +39,7 @@ export default defineConfig({
     // This project is a library as it is being used in Paranext
     lib: {
       // List each WebView file as an entry file because each needs to be transpiled
-      entry: webViews.map((webView) => path.resolve(__dirname, webView)),
+      entry: webViews.map((webView) => path.resolve(__dirname, "../", webView)),
       /**
        * Get the output file name for each WebView.
        *
@@ -59,9 +59,13 @@ export default defineConfig({
         // Set up the next call to this function to get the next WebView file
         entryFileIndex += 1;
 
+        // Put transpiled WebViews in a temp folder in the same directory as the original WebView
         return path.join(
-          entryName,
-          `${entryName}.${getFileExtensionByModuleFormat(moduleFormat)}`
+          webViewFileInfo.dir,
+          webViewTempDir,
+          `${webViewFileInfo.name}.${getFileExtensionByModuleFormat(
+            moduleFormat
+          )}`
         );
       },
       // Output to cjs format as that's what Paranext supports. In production, es modules fail to
@@ -76,8 +80,13 @@ export default defineConfig({
     // into the main file
     sourcemap: "inline",
     // We are placing the built WebView files next to their original files
-    outDir: "lib",
-    // We do not want to erase the lib folder!
+    outDir: "",
+    // We do not want to erase the entire project!
     emptyOutDir: false,
+    // We do not want to copy the public files as we will do that in the next build step
+    copyPublicDir: false,
   },
+  /* esbuild: {
+    reserveProps: /ExtensionTemplateReact/,
+  }, */
 });

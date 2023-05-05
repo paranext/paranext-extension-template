@@ -3,7 +3,8 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "build:vite": "vite build --config vite/vite-web-view.config.ts && vite build --config vite/vite.config.ts",
+    "build:vite": "vite build --config vite/vite-web-view.config.ts",
+    "build:vite2": " vite build --config vite/vite.config.ts",
     "start:vite": "vite build --watch --config vite/vite.config.ts",
     "lint": "tsc",
     "start:core": "cd ../paranext-core && npm run start",

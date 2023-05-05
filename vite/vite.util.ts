@@ -6,8 +6,11 @@ import { ModuleFormat } from "rollup";
  * HTML Web Views should be named <name>.web-view.ejs
  *  - Note: the HTML web views are .ejs files because rollup was not recognizing them to have exports for some reason.
  */
-export const webViewGlob = "../lib/*.web-view.(tsx|ejs)";
+export const webViewGlob = "**/*.web-view.{tsx,ejs}";
 export const webViewTsxGlob = "**/*.web-view.tsx";
+
+/** Name of adjacent folder used to store WebView files transpiled in the first build step */
+export const webViewTempDir = "temp-vite";
 
 /** Modules that Paranext supplies so extensions can use them easily */
 export const paranextProvidedModules = ["react", "react-dom/client", "papi"];
