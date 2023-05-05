@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "build:vite": "vite build --config vite/vite.config.ts",
+    "build:vite": "vite build --config vite/vite-web-view.config.ts && vite build --config vite/vite.config.ts",
     "start:vite": "vite build --watch --config vite/vite.config.ts",
     "lint": "tsc",
     "start:core": "cd ../paranext-core && npm run start",
@@ -20,6 +20,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "concurrently": "^8.0.1",
     "cross-env": "^7.0.3",
+    "glob": "^10.2.2",
     "papi-dts": "file:../paranext-core/lib/papi-dts",
     "rollup-plugin-import-manager": "^0.5.3",
     "rollup-plugin-string": "^3.0.0",

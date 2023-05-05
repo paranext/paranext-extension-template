@@ -46,3 +46,24 @@ To watch extension files (in `lib`) for changes:
 To build the extension once:
 
 `npm run build:vite`
+
+## Vite Build Explanation
+
+This extension template is built by Vite in two steps: a WebView transpilation step and a packaging step:
+
+## Build 1: WebView transpilation
+
+Vite prepares WebViews for use and outputs them into the `temp` folder:
+- Formats WebViews to match how they should look to work in Paranext
+- Transpiles React/TypeScript WebViews into JavaScript
+- Packages dependencies into the WebViews
+- Embeds Sourcemaps into the WebViews inline
+
+## Built 2: Packaging
+
+Vite packages the extension together into the `dist` folder:
+- Transpiles the main TypeScript file and its imported modules into JavaScript
+- Injects the WebViews into the main file
+- Packages dependencies into the main file
+- Generates sourcemaps for the file
+- Packages everything up into an extension folder in `dist`
