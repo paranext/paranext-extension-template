@@ -6,17 +6,17 @@ import { defineConfig } from "vite";
 import path from "path";
 import react from "@vitejs/plugin-react";
 import { importManager } from "rollup-plugin-import-manager";
+import escapeStringRegexp from "escape-string-regexp";
 import {
   getFileExtensionByModuleFormat,
+  getWebViewTsxPaths,
   paranextProvidedModules,
   webViewTempDir,
   webViewTsxGlob,
 } from "./vite.util";
-import { globSync } from "glob";
 
 /** List of TypeScript WebView files to transpile */
-const webViews = globSync(webViewTsxGlob, { ignore: "node_modules/**" });
-console.log(JSON.stringify(webViews));
+const tsxWebViews = getWebViewTsxPaths();
 
 /** Tracks which entry file we're working with in determining the file name. */
 let entryFileIndex = 0;
@@ -30,7 +30,9 @@ export default defineConfig({
     importManager({
       include: webViewTsxGlob,
       units: paranextProvidedModules.map((module) => ({
-        module,
+        // Match the whole module name, nothing more, nothing less
+        module: 
+            new RegExp(`^${escapeStringRegexp(module)}$`),
         actions: "remove",
       })),
     }),
@@ -39,7 +41,7 @@ export default defineConfig({
     // This project is a library as it is being used in Paranext
     lib: {
       // List each WebView file as an entry file because each needs to be transpiled
-      entry: webViews.map((webView) => path.resolve(__dirname, "../", webView)),
+      entry: tsxWebViews.map((webView) => path.resolve(__dirname, "../", webView)),
       /**
        * Get the output file name for each WebView.
        *
@@ -50,7 +52,7 @@ export default defineConfig({
        */
       fileName: (moduleFormat, entryName) => {
         // Get the corresponding webView file for this entry
-        const webViewFilePath = webViews[entryFileIndex];
+        const webViewFilePath = tsxWebViews[entryFileIndex];
         const webViewFileInfo = path.parse(webViewFilePath);
         if (entryName !== webViewFileInfo.name)
           throw new Error(

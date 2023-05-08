@@ -4,17 +4,51 @@
 
 import { defineConfig } from "vite";
 import path from "path";
+import { importManager } from "rollup-plugin-import-manager";
+import escapeStringRegexp from "escape-string-regexp";
 import { string as importString } from "rollup-plugin-string";
-import { paranextProvidedModules, webViewGlob, webViewTsxGlob } from "./vite.util";
+import {
+  paranextProvidedModules,
+  webViewGlob,
+  webViewTsxImportRegex,
+  webViewTempDir,
+  getWebViewTsxPaths,
+  insertWebViewTempDir,
+  webViewTempGlob,
+  getFileExtensionByModuleFormat,
+} from "./vite.util";
+
+/** List of TypeScript WebView files transpiled in the first build step */
+const tsxWebViews = getWebViewTsxPaths();
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    // Redirect WebView imports to their version built in the first build step
+    importManager({
+      // Need to include all files that could import WebViews
+      include: "**/*.{ts,tsx,js,jsx}",
+      units: tsxWebViews.map((webView) => {
+        const webViewInfo = path.parse(webView);
+        // Get the file name without the extension if it is tsx as tsx is inferred when importing
+        const webViewModuleName =
+          webViewInfo.ext === ".tsx" ? webViewInfo.name : webViewInfo.base;
+        return {
+          module:
+            // Match the whole module name, nothing more, nothing less
+            new RegExp(`^${escapeStringRegexp(webViewModuleName)}$`),
+          actions: {
+            select: "module",
+            rename: insertWebViewTempDir,
+          },
+        };
+      }),
+    }),
     // Import web view files as strings to pass on the papi
     // importString plugin must be after any other plugins that need to transpile these files
     {
       ...importString({
-        include: webViewGlob,
+        include: [webViewGlob, webViewTempGlob],
       }),
       enforce: "post",
     },
@@ -25,7 +59,10 @@ export default defineConfig({
       // The main entry file of the extension
       entry: path.resolve(__dirname, "../lib/main.ts"),
       // The output file name for the extension (file extension is appended)
-      fileName: "paranext-extension-template",
+      fileName: (moduleFormat, entryName) =>
+        `paranext-extension-template.${getFileExtensionByModuleFormat(
+          moduleFormat
+        )}`,
       // Output to cjs format as that's what Paranext supports
       formats: ["cjs"],
     },
@@ -36,4 +73,26 @@ export default defineConfig({
     // Generate sourcemaps as separate files since VSCode can load them directly
     sourcemap: true,
   },
+  /* resolve: {
+    alias: [
+      {
+        find: webViewTsxImportRegex,
+        // Pass the whole import string into the resolver
+        replacement: '$&',
+        customResolver(source, importer) {
+          const webViewFileInfo = path.parse(source);
+          const importerInfo = path.parse(importer);
+          const finalPath = path.resolve(
+            importerInfo.dir,
+            webViewFileInfo.dir,
+            webViewTempDir,
+            // If there is no file extension (parsed as the extension being .web-view), put js on it
+            webViewFileInfo.ext === '.web-view' ? `${webViewFileInfo.base}.js` : webViewFileInfo.base
+          );
+          console.log(`${source} -> ${finalPath}`);
+          return finalPath;
+        },
+      },
+    ],
+  }, */
 });
