@@ -11,7 +11,7 @@ const {
   logger,
 } = papi;
 
-export function ExtensionTemplateReact() {
+globalThis.webViewComponent = function ExtensionTemplateReact() {
   const [clicks, setClicks] = useState(0);
 
   const quickVerseDataProvider = useDataProvider<QuickVerseDataProvider>(

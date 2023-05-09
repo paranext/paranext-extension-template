@@ -147,7 +147,6 @@ export async function activate() {
   ];
 
   papi.webViews.addWebView({
-    componentName: "ExtensionTemplateReact",
     contents: extensionTemplateReact,
     styles: extensionTemplateReactStyles,
   });

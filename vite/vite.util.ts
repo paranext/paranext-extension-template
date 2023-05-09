@@ -1,6 +1,6 @@
 import path from "path";
 import { ModuleFormat } from "rollup";
-import { globSync } from "glob";
+import { glob } from "glob";
 
 /**
  * Glob filename matcher for web views.
@@ -52,7 +52,7 @@ export function getFileExtensionByModuleFormat(moduleFormat: ModuleFormat) {
  * Path relative to project root
  */
 export function getWebViewTsxPaths() {
-  return globSync(webViewTsxGlob, { ignore: "node_modules/**" });
+  return glob(webViewTsxGlob, { ignore: "node_modules/**" });
 }
 
 /**
@@ -68,8 +68,5 @@ export function insertWebViewTempDir(moduleSourceRaw: string) {
   const importInfo = path.parse(importPath);
   const newPath = [importInfo.dir, webViewTempDir, importInfo.base].join("/");
   const finalModuleSource = `${quote}${newPath}${quote}`;
-
-  console.log(importInfo);
-  console.log(`${moduleSourceRaw} -> ${finalModuleSource}`);
   return finalModuleSource;
 }
