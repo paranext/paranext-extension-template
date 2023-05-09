@@ -54,15 +54,17 @@ export default defineConfig(async () => {
          */
         fileName: (moduleFormat, entryName) => {
           // Get the corresponding webView file for this entry
-          const webViewFilePath =
-            tsxWebViews[entryFileIndex % tsxWebViews.length];
+          const webViewFilePath = tsxWebViews[entryFileIndex];
           const webViewFileInfo = path.parse(webViewFilePath);
           if (entryName !== webViewFileInfo.name)
             throw new Error(
               `Error building in Vite: entryName ${entryName} does not match WebView file name ${webViewFileInfo.name}! File path: ${webViewFilePath} entryFileIndex ${entryFileIndex}`
             );
+
           // Set up the next call to this function to get the next WebView file
-          entryFileIndex += 1;
+          // Vite does not get the config every time it rebuilds during watching, so we need to wrap the index manually as
+          // Vite does not re-run the config and set the index back to zero
+          entryFileIndex = (entryFileIndex + 1) % tsxWebViews.length;
 
           // Put transpiled WebViews in a temp folder in the same directory as the original WebView
           return path.join(
