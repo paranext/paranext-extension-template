@@ -4,6 +4,7 @@ Basic extension template for Paranext
 ## Summary
 
 This is a Vite project template pre-configured to build Paranext extensions.
+
  - `lib` contains the source code for the extension
    - `lib/main.ts` is the main entry file for the extension
    - `*.web-view.tsx` files will be treated as React WebViews

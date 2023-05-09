@@ -10,8 +10,6 @@ import { string as importString } from "rollup-plugin-string";
 import {
   paranextProvidedModules,
   webViewGlob,
-  webViewTsxImportRegex,
-  webViewTempDir,
   getWebViewTsxPaths,
   insertWebViewTempDir,
   webViewTempGlob,

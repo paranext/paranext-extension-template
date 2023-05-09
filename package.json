@@ -6,13 +6,13 @@
   "scripts": {
     "build:vite1": "vite build --config vite/vite-web-view.config.ts",
     "build:vite2": "vite build --config vite/vite.config.ts",
-    "build:vite": "build:vite1 && build:vite2",
+    "build:vite": "npm run build:vite1 && npm run build:vite2",
     "start:vite1": "vite build --watch --config vite/vite-web-view.config.ts",
     "start:vite2": "vite build --watch --config vite/vite.config.ts",
     "start:vite": "concurrently \"npm:start:vite1\" \"npm:start:vite2\"",
-    "lint": "tsc",
     "start:core": "cd ../paranext-core && npm run start",
     "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:start:vite\" \"npm:start:core\"",
+    "lint": "tsc",
     "postinstall": "patch-package"
   },
   "dependencies": {
