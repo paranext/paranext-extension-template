@@ -42,7 +42,7 @@ Note: The built extension will be in the `dist` folder. In order for Paranext to
 
 To watch extension files (in `lib`) for changes:
 
-`npm start:vite`
+`npm run start:vite`
 
 To build the extension once:
 
