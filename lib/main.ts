@@ -147,13 +147,15 @@ export async function activate() {
   ];
 
   papi.webViews.addWebView({
-    contents: extensionTemplateReact,
+    id: 'Extension template WebView React',
+    content: extensionTemplateReact,
     styles: extensionTemplateReactStyles,
   });
-
+  
   papi.webViews.addWebView({
+    id: 'Extension template WebView HTML',
     contentType: 'html' as WebViewContentType.HTML,
-    contents: extensionTemplateHtml,
+    content: extensionTemplateHtml,
   });
 
   // For now, let's just make things easy and await the data provider promise at the end so we don't hold everything else up
