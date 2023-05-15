@@ -17,12 +17,13 @@ import {
 } from "./vite.util";
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => {
+const extensionConfig = defineConfig(async () => {
   /** List of TypeScript WebView files transpiled in the first build step */
   const tsxWebViews = await getWebViewTsxPaths();
 
   return {
     plugins: [
+      // Shared with https://github.com/paranext/paranext-core/blob/main/vite/vite.config.ts
       // Redirect WebView imports to their version built in the first build step
       importManager({
         // Need to include all files that could import WebViews
@@ -43,12 +44,13 @@ export default defineConfig(async () => {
           };
         }),
       }),
+      // Shared with https://github.com/paranext/paranext-core/blob/main/vite/vite.config.ts
       // Import web view files as strings to pass on the papi
-      // importString plugin must be after any other plugins that need to transpile these files
       {
         ...importString({
           include: [webViewGlob, webViewTempGlob],
         }),
+        // importString plugin must be after any other plugins that need to transpile these files
         enforce: "post",
       },
     ],
@@ -74,3 +76,5 @@ export default defineConfig(async () => {
     },
   };
 });
+
+export default extensionConfig;

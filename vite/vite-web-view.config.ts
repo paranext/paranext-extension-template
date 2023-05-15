@@ -1,3 +1,5 @@
+// #region Shared with https://github.com/paranext/paranext-core/blob/main/vite/vite-web-view.config.ts
+
 /**
  * First Vite build step for transpiling TypeScript WebViews
  */
@@ -16,7 +18,7 @@ import {
 } from "./vite.util";
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => {
+const webViewConfig = defineConfig(async () => {
   /** List of TypeScript WebView files to transpile */
   const tsxWebViews = await getWebViewTsxPaths();
 
@@ -95,3 +97,7 @@ export default defineConfig(async () => {
     },
   };
 });
+
+export default webViewConfig;
+
+// #endregion

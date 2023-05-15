@@ -2,6 +2,8 @@ import path from "path";
 import { ModuleFormat } from "rollup";
 import { glob } from "glob";
 
+// #region shared with https://github.com/paranext/paranext-core/blob/main/vite/vite.util.ts
+
 /**
  * Glob filename matcher for web views.
  * React Web Views should be named <name>.web-view.tsx
@@ -70,3 +72,5 @@ export function insertWebViewTempDir(moduleSourceRaw: string) {
   const finalModuleSource = `${quote}${newPath}${quote}`;
   return finalModuleSource;
 }
+
+// #endregion
