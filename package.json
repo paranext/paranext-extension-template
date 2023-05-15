@@ -12,8 +12,7 @@
     "start:vite": "concurrently \"npm:start:vite1\" \"npm:start:vite2\"",
     "start:core": "cd ../paranext-core && npm run start",
     "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:start:vite\" \"npm:start:core\"",
-    "lint": "tsc",
-    "postinstall": "patch-package"
+    "lint": "tsc"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -30,7 +29,7 @@
     "glob": "^10.2.2",
     "papi-dts": "file:../paranext-core/lib/papi-dts",
     "patch-package": "^7.0.0",
-    "rollup-plugin-import-manager": "^0.5.3",
+    "rollup-plugin-import-manager": "^0.6.1",
     "rollup-plugin-string": "^3.0.0",
     "sass": "^1.62.1",
     "typescript": "^4.9.3",
