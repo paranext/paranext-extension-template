@@ -1,8 +1,7 @@
 import papi from "papi";
-import React from "react";
+import { useState } from "react";
 import { QuickVerseDataProvider } from "extension-types";
 
-const { useState } = React;
 const {
   react: {
     hooks: { useData, useDataProvider },
