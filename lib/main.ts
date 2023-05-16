@@ -6,7 +6,6 @@ import extensionTemplateReactStyles from "./extension-template.web-view.scss?inl
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
 import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
 import type { WebViewContentType } from "shared/data/web-view.model";
-import { DataProvider } from "shared/models/data-provider.model";
 
 const { logger } = papi;
 
@@ -16,12 +15,7 @@ logger.info("Extension template is importing!");
 
 const unsubscribers = [];
 
-export type QuickVerseSetData = string | { text: string; isHeresy: boolean };
-
-export interface QuickVerseDataProvider
-  extends DataProvider<string, string, QuickVerseSetData> {
-  setHeresy(verseRef: string, verseText: string): Promise<boolean>;
-}
+type QuickVerseSetData = string | { text: string; isHeresy: boolean };
 
 class QuickVerseDataProviderEngine
   implements IDataProviderEngine<string, string | undefined, QuickVerseSetData>
@@ -139,7 +133,7 @@ export async function activate() {
   logger.info("Extension template is activating!");
 
   const quickVerseDataProviderInfoPromise = papi.dataProvider.registerEngine(
-    "quick-verse.quick-verse",
+    "paranext-extension-template.quick-verse",
     new QuickVerseDataProviderEngine()
   );
 
@@ -153,14 +147,15 @@ export async function activate() {
   ];
 
   papi.webViews.addWebView({
-    componentName: "ExtensionTemplateReact",
-    contents: extensionTemplateReact,
+    id: 'Extension template WebView React',
+    content: extensionTemplateReact,
     styles: extensionTemplateReactStyles,
   });
-
+  
   papi.webViews.addWebView({
+    id: 'Extension template WebView HTML',
     contentType: 'html' as WebViewContentType.HTML,
-    contents: extensionTemplateHtml,
+    content: extensionTemplateHtml,
   });
 
   // For now, let's just make things easy and await the data provider promise at the end so we don't hold everything else up

@@ -1,8 +1,7 @@
 import papi from "papi";
-import React from "react";
-import { QuickVerseDataProvider } from "./main";
+import { useState } from "react";
+import { QuickVerseDataProvider } from "extension-types";
 
-const { useState } = React;
 const {
   react: {
     hooks: { useData, useDataProvider },
@@ -11,11 +10,11 @@ const {
   logger,
 } = papi;
 
-function ExtensionTemplateReact() {
+globalThis.webViewComponent = function() {
   const [clicks, setClicks] = useState(0);
 
   const quickVerseDataProvider = useDataProvider<QuickVerseDataProvider>(
-    "quick-verse.quick-verse"
+    "paranext-extension-template.quick-verse"
   );
 
   const [latestVerseText] = useData(

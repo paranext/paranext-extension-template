@@ -10,7 +10,7 @@
         "request": "launch",
         "runtimeExecutable": "npm",
         "skipFiles": ["<node_internals>/**"],
-        "runtimeArgs": ["run", "start"]
+        "runtimeArgs": ["run", "start:vite"]
       },
       {
         "name": "Build Extension",
@@ -18,7 +18,24 @@
         "request": "launch",
         "runtimeExecutable": "npm",
         "skipFiles": ["<node_internals>/**"],
-        "runtimeArgs": ["run", "build"]
+        "runtimeArgs": ["run", "build:vite"]
+      },
+      {
+        "name": "Debug Paranext Core with Extension",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "start"],
+        "skipFiles": ["<node_internals>/**"],
+        "env": {
+          "MAIN_ARGS": "--inspect=5858 --remote-debugging-port=9223",
+          "IN_VSCODE": "true"
+        },
+        "presentation": {
+          "hidden": false,
+          "group": "",
+          "order": 1
+        }
       }
     ]
 }
