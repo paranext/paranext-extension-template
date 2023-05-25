@@ -6,6 +6,11 @@ import extensionTemplateReactStyles from "./extension-template.web-view.scss?inl
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
 import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
 import type { WebViewContentType } from "shared/data/web-view.model";
+import { QuickVerseDataTypes } from "extension-types";
+import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
+import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
+import { ExecutionToken } from "node/models/execution-token.model";
+import { UnsubscriberAsync } from "shared/utils/papi-util";
 
 const { logger } = papi;
 
@@ -18,7 +23,7 @@ const unsubscribers = [];
 type QuickVerseSetData = string | { text: string; isHeresy: boolean };
 
 class QuickVerseDataProviderEngine
-  implements IDataProviderEngine<string, string | undefined, QuickVerseSetData>
+  implements IDataProviderEngine<QuickVerseDataTypes>
 {
   /**
    * Verses stored by the Data Provider.
@@ -30,23 +35,40 @@ class QuickVerseDataProviderEngine
   /** Latest updated verse reference */
   latestVerseRef = "john 11:35";
 
+  /** Number of times any verse has been modified by a user this session */
+  heresyCount = 0;
+
+  /** @param heresyWarning string to prefix heretical data */
+  constructor(public heresyWarning: string) {
+    this.heresyWarning = this.heresyWarning ?? "heresyCount =";
+  }
+
   // Note: this method does not have to be provided here for it to work properly because it is layered over on the papi.
-  // But because we provide it here, we must return `true` to notify like in the set method.
+  // But because we provide it here, we must return some update instructions to notify like in the set method.
   // The contents of this method run before the update is emitted.
+  // Here, we make this update everything by default if no parameter is provided
   // TODO: What will actually happen if we run this in `get`? Stack overflow?
-  notifyUpdate() {
+  notifyUpdateVerse(
+    updateInstructions?: DataProviderUpdateInstructions<QuickVerseDataTypes>
+  ) {
     logger.info(
-      `Quick verse notifyUpdate! latestVerseRef = ${this.latestVerseRef}`
+      `Quick verse notifyUpdateVerse! latestVerseRef = ${this.latestVerseRef}`
     );
-    return true;
+    // If they don't pass anything in, update everything by default
+    return updateInstructions === undefined ? "*" : updateInstructions;
   }
 
   /**
-   * @param selector Scripture reference
-   * @param data { text: '<verse_text>', isHeresy: true } Must inform us that you are a heretic
+   * Internal set method that doesn't send updates so we can update how we want from setVerse and
+   * setHeresy
+   * @param selector string Scripture reference
+   * @param data Must inform us that you are a heretic
+   * Note: this method is intentionally not named `setInternal` (if it started with `set`, the papi
+   * would consider it a data type method and would fail to use this engine because it would expect
+   * a `getInternal` as well). You can name it anything that doesn't start with `set` like
+   * `_setInternal`.
    */
-  // Note: this method gets layered over so that you can run `this.set` in the data provider engine, and it will notify update afterward.
-  async set(selector: string, data: QuickVerseSetData) {
+  async internalSet(selector: string, data: QuickVerseSetData) {
     // Just get notifications of updates with the 'notify' selector. Nothing to change
     if (selector === "notify") return false;
 
@@ -67,26 +89,38 @@ class QuickVerseDataProviderEngine
     };
     if (selector !== "latest")
       this.latestVerseRef = this.#getSelector(selector);
-    return true;
+    this.heresyCount += 1;
+    // Update all data types, so Verse and Heresy in this case
+    return "*";
   }
 
   /**
-   * Example of layering over set inside a data provider. This updates the verse text and sends an update event
+   * Set a verse's text. You must manually specify that the verse contains heresy, or you cannot set.
+   * @param verseRef
+   * @param data
+   * @returns
+   * Note: this method gets layered over so that you can run `this.setVerse` in this data provider
+   * engine, and it will notify update afterward.
+   */
+  async setVerse(verseRef: string, data: QuickVerseSetData) {
+    return this.internalSet(verseRef, data);
+  }
+
+  /**
+   * Set a verse's text. Using this function implies that you identify as heresy, so you do not have
+   * to identify as heresy in any special way
    * @param verseRef verse reference to change
    * @param verseText text to update the verse to, you heretic
    */
   async setHeresy(verseRef: string, verseText: string) {
-    return this.set(verseRef, { text: verseText, isHeresy: true });
+    return this.internalSet(verseRef, { text: verseText, isHeresy: true });
   }
 
-  /**
-   * @param selector
-   */
-  get = async (selector: string) => {
+  getVerse = async (verseRef: string) => {
     // Just get notifications of updates with the 'notify' selector
-    if (selector === "notify") return undefined;
+    if (verseRef === "notify") return undefined;
 
-    let responseVerse = this.verses[this.#getSelector(selector)];
+    let responseVerse = this.verses[this.#getSelector(verseRef)];
 
     // If we don't already have the verse cached, cache it
     if (!responseVerse) {
@@ -94,28 +128,45 @@ class QuickVerseDataProviderEngine
       try {
         const verseResponse = await papi.fetch(
           `https://bible-api.com/${encodeURIComponent(
-            this.#getSelector(selector)
+            this.#getSelector(verseRef)
           )}`
         );
         const verseData = await verseResponse.json();
         const text = verseData.text.replaceAll("\n", "");
         responseVerse = { text };
-        this.verses[this.#getSelector(selector)] = responseVerse;
+        this.verses[this.#getSelector(verseRef)] = responseVerse;
         // Cache the verse text, track the latest cached verse, and send an update
-        if (selector !== "latest")
-          this.latestVerseRef = this.#getSelector(selector);
-        this.notifyUpdate();
+        if (verseRef !== "latest")
+          this.latestVerseRef = this.#getSelector(verseRef);
+        // Inform everyone that we updated
+        this.notifyUpdateVerse("*");
       } catch (e) {
         responseVerse = {
-          text: `Failed to fetch ${selector} from bible-api! Reason: ${e}`,
+          text: `Failed to fetch ${verseRef} from bible-api! Reason: ${e}`,
         };
       }
     }
 
+    if (responseVerse.isChanged) {
+      // Remove any previous heresy warning from the beginning of the text so they don't stack
+      responseVerse.text = responseVerse.text.replace(/^\[.* \d*\] /, "");
+      return `[${this.heresyWarning} ${this.heresyCount}] ${responseVerse.text}`;
+    }
     return responseVerse.text;
   };
 
   /**
+   * Need to provide a get for every set, so we specify getHeresy here which does the same thing as
+   * getVerse
+   * @param selector
+   * @returns
+   */
+  async getHeresy(selector: string) {
+    return this.getVerse(selector);
+  }
+
+  /**
+   * Private method that cannot be called on the network.
    * Valid selectors:
    * - `'notify'` - informs the listener of any changes in quick verse text but does not carry data
    * - `'latest'` - the latest-updated quick verse text including pulling a verse from the server and a heretic changing the verse
@@ -129,13 +180,31 @@ class QuickVerseDataProviderEngine
   }
 }
 
-export async function activate() {
+export async function activate(context: ExecutionActivationContext) {
   logger.info("Extension template is activating!");
 
-  const quickVerseDataProviderInfoPromise = papi.dataProvider.registerEngine(
-    "paranext-extension-template.quick-verse",
-    new QuickVerseDataProviderEngine()
+  const token: ExecutionToken = context.executionToken;
+  const warning = await papi.storage.readTextFileFromInstallDirectory(
+    token,
+    "assets/heresy-warning.txt"
   );
+  const engine = new QuickVerseDataProviderEngine(warning.trim());
+
+  let storedHeresyCount: number = 0;
+  try {
+    // If a user has never been a heretic, there is nothing to read
+    const loadedData = await papi.storage.readUserData(token, "heresy-count");
+    if (loadedData) storedHeresyCount = Number(loadedData);
+  } catch (error) {
+    logger.debug(error);
+  }
+  engine.heresyCount = storedHeresyCount;
+
+  const quickVerseDataProviderPromise =
+    papi.dataProvider.registerEngine<QuickVerseDataTypes>(
+      "paranext-extension-template.quick-verse",
+      engine
+    );
 
   const unsubPromises = [
     papi.commands.registerCommand(
@@ -147,30 +216,28 @@ export async function activate() {
   ];
 
   papi.webViews.addWebView({
-    id: 'Extension template WebView React',
+    id: "Extension template WebView React",
     content: extensionTemplateReact,
     styles: extensionTemplateReactStyles,
   });
-  
+
   papi.webViews.addWebView({
-    id: 'Extension template WebView HTML',
-    contentType: 'html' as WebViewContentType.HTML,
+    id: "Extension template WebView HTML",
+    contentType: "html" as WebViewContentType.HTML,
     content: extensionTemplateHtml,
   });
 
   // For now, let's just make things easy and await the data provider promise at the end so we don't hold everything else up
-  const quickVerseDataProviderInfo = await quickVerseDataProviderInfoPromise;
+  const quickVerseDataProvider = await quickVerseDataProviderPromise;
 
-  return Promise.all(
-    unsubPromises.map((unsubPromise) => unsubPromise.promise)
-  ).then(() => {
-    logger.info("Extension template is finished activating!");
-    return papi.util.aggregateUnsubscriberAsyncs(
-      unsubPromises
-        .map((unsubPromise) => unsubPromise.unsubscriber)
-        .concat([quickVerseDataProviderInfo.dispose])
+  const combinedUnsubscriber: UnsubscriberAsync =
+    papi.util.aggregateUnsubscriberAsyncs(
+      (await Promise.all(unsubPromises)).concat([
+        quickVerseDataProvider.dispose,
+      ])
     );
-  });
+  logger.info("Extension template is finished activating!");
+  return combinedUnsubscriber;
 }
 
 export async function deactivate() {

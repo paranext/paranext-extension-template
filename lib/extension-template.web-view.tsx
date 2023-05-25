@@ -1,6 +1,6 @@
 import papi from "papi";
 import { useState } from "react";
-import { QuickVerseDataProvider } from "extension-types";
+import { QuickVerseDataProvider, QuickVerseDataTypes } from "extension-types";
 
 const {
   react: {
@@ -17,7 +17,7 @@ globalThis.webViewComponent = function() {
     "paranext-extension-template.quick-verse"
   );
 
-  const [latestVerseText] = useData(
+  const [latestVerseText] = useData.Verse<QuickVerseDataTypes['Verse']>(
     quickVerseDataProvider,
     "latest",
     "Loading latest Scripture text..."
