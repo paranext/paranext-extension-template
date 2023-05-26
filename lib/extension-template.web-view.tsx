@@ -17,7 +17,7 @@ globalThis.webViewComponent = function() {
     "paranext-extension-template.quick-verse"
   );
 
-  const [latestVerseText] = useData.Verse<QuickVerseDataTypes['Verse']>(
+  const [latestVerseText] = useData.Verse<QuickVerseDataTypes, 'Verse'>(
     quickVerseDataProvider,
     "latest",
     "Loading latest Scripture text..."
