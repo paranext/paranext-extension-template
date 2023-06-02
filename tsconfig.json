@@ -18,7 +18,8 @@
     "types": ["papi-dts"],
     "paths": {
       "extension-types": ["./public/paranext-extension-template"]
-    }
+    },
+    "experimentalDecorators": true,
   },
   "include": ["lib", "public/paranext-extension-template.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
