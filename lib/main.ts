@@ -5,20 +5,21 @@ import extensionTemplateReact from "./extension-template.web-view";
 import extensionTemplateReactStyles from "./extension-template.web-view.scss?inline";
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
 import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
-import type { WebViewContentType } from "shared/data/web-view.model";
+import type { SavedWebViewDefinition,
+  WebViewContentType,
+  WebViewDefinition } from "shared/data/web-view.model";
 import { QuickVerseDataTypes } from "extension-types";
 import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
 import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
 import { ExecutionToken } from "node/models/execution-token.model";
 import { UnsubscriberAsync } from "shared/utils/papi-util";
+import type { IWebViewProvider } from "shared/models/web-view-provider.model";
 
 const { logger, dataProvider: { DataProviderEngine } } = papi;
 
 console.log(import.meta.env.PROD);
 
 logger.info("Extension template is importing!");
-
-const unsubscribers = [];
 
 type QuickVerseSetData = string | { text: string; isHeresy: boolean };
 
@@ -268,6 +269,50 @@ class QuickVerseDataProviderEngine
   }
 }
 
+const htmlWebViewType = "paranext-extension-template.html";
+
+/**
+ * Simple web view provider that provides sample html web views when papi requests them
+ */
+const htmlWebViewProvider: IWebViewProvider = {
+  async getWebView(
+    savedWebView: SavedWebViewDefinition
+  ): Promise<WebViewDefinition | undefined> {
+    if (savedWebView.webViewType !== htmlWebViewType)
+      throw new Error(
+        `${htmlWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`
+      );
+    return {
+      ...savedWebView,
+      title: "Extension Template HTML",
+      contentType: "html" as WebViewContentType.HTML,
+      content: extensionTemplateHtml,
+    };
+  },
+};
+
+const reactWebViewType = "paranext-extension-template.react";
+
+/**
+ * Simple web view provider that provides React web views when papi requests them
+ */
+const reactWebViewProvider: IWebViewProvider = {
+  async getWebView(
+    savedWebView: SavedWebViewDefinition
+  ): Promise<WebViewDefinition | undefined> {
+    if (savedWebView.webViewType !== reactWebViewType)
+      throw new Error(
+        `${reactWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`
+      );
+    return {
+      ...savedWebView,
+      title: "Extension Template React",
+      content: extensionTemplateReact,
+      styles: extensionTemplateReactStyles,
+    };
+  },
+};
+
 export async function activate(context: ExecutionActivationContext) {
   logger.info("Extension template is activating!");
 
@@ -294,6 +339,16 @@ export async function activate(context: ExecutionActivationContext) {
       engine
     );
 
+  const htmlWebViewProviderPromise = papi.webViews.registerWebViewProvider(
+    htmlWebViewType,
+    htmlWebViewProvider
+  );
+
+  const reactWebViewProviderPromise = papi.webViews.registerWebViewProvider(
+    reactWebViewType,
+    reactWebViewProvider
+  );
+
   const unsubPromises = [
     papi.commands.registerCommand(
       "extension-template.do-stuff",
@@ -303,25 +358,25 @@ export async function activate(context: ExecutionActivationContext) {
     ),
   ];
 
-  papi.webViews.addWebView({
-    id: "Extension template WebView React",
-    content: extensionTemplateReact,
-    styles: extensionTemplateReactStyles,
-  });
-
-  papi.webViews.addWebView({
-    id: "Extension template WebView HTML",
-    contentType: "html" as WebViewContentType.HTML,
-    content: extensionTemplateHtml,
-  });
+  // Create webviews or get an existing webview if one already exists for this type
+  // Note: here, we are using `existingId: '?'` to indicate we do not want to create a new webview
+  // if one already exists. The webview that already exists could have been created by anyone
+  // anywhere; it just has to match `webViewType`. See `paranext-core's hello-someone.ts` for an example of keeping
+  // an existing webview that was specifically created by `paranext-core's hello-someone`.
+  papi.webViews.getWebView(htmlWebViewType, undefined, { existingId: "?" });
+  papi.webViews.getWebView(reactWebViewType, undefined, { existingId: "?" });
 
   // For now, let's just make things easy and await the data provider promise at the end so we don't hold everything else up
   const quickVerseDataProvider = await quickVerseDataProviderPromise;
+  const htmlWebViewProviderResolved = await htmlWebViewProviderPromise;
+  const reactWebViewProviderResolved = await reactWebViewProviderPromise;
 
   const combinedUnsubscriber: UnsubscriberAsync =
     papi.util.aggregateUnsubscriberAsyncs(
       (await Promise.all(unsubPromises)).concat([
         quickVerseDataProvider.dispose,
+        htmlWebViewProviderResolved.dispose,
+        reactWebViewProviderResolved.dispose,
       ])
     );
   logger.info("Extension template is finished activating!");

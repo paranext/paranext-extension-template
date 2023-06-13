@@ -1,11 +1,11 @@
 import papi from "papi";
 import { useState } from "react";
 import { QuickVerseDataProvider, QuickVerseDataTypes } from "extension-types";
+import { Button } from "papi-components";
 
 const {
   react: {
     hooks: { useData, useDataProvider },
-    components: { Button },
   },
   logger,
 } = papi;
