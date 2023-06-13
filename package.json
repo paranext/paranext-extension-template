@@ -15,6 +15,7 @@
     "lint": "tsc"
   },
   "dependencies": {
+    "papi-components": "file:../paranext-core/lib/papi-components",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
