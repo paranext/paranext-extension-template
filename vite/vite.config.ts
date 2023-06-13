@@ -70,6 +70,10 @@ const extensionConfig = defineConfig(async () => {
       rollupOptions: {
         // Do not bundle papi because it will be imported in Paranext
         external: paranextProvidedModules,
+        output: {
+          // Disable code splitting and chunks. Extension main must be a single file
+          manualChunks: () => "main",
+        },
       },
       // Generate sourcemaps as separate files since VSCode can load them directly
       sourcemap: true,
