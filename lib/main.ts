@@ -8,7 +8,7 @@ import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
-import { QuickVerseDataTypes } from "extension-types";
+import { ExtensionVerseDataTypes } from "extension-types";
 import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
 import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
 import { ExecutionToken } from "node/models/execution-token.model";
@@ -61,8 +61,8 @@ type QuickVerseSetData = string | { text: string; isHeresy: boolean };
  * define a data provider engine with an object. An example of this is found in `hello-someone.ts`.
  */
 class QuickVerseDataProviderEngine
-  extends DataProviderEngine<QuickVerseDataTypes>
-  implements IDataProviderEngine<QuickVerseDataTypes>
+  extends DataProviderEngine<ExtensionVerseDataTypes>
+  implements IDataProviderEngine<ExtensionVerseDataTypes>
 {
   /**
    * Verses stored by the Data Provider.
@@ -103,7 +103,7 @@ class QuickVerseDataProviderEngine
   async setInternal(
     selector: string,
     data: QuickVerseSetData,
-  ): Promise<DataProviderUpdateInstructions<QuickVerseDataTypes>> {
+  ): Promise<DataProviderUpdateInstructions<ExtensionVerseDataTypes>> {
     // Just get notifications of updates with the 'notify' selector. Nothing to change
     if (selector === 'notify') return false;
 
@@ -334,7 +334,7 @@ export async function activate(context: ExecutionActivationContext) {
   engine.heresyCount = storedHeresyCount;
 
   const quickVerseDataProviderPromise =
-    papi.dataProvider.registerEngine<QuickVerseDataTypes>(
+    papi.dataProvider.registerEngine<ExtensionVerseDataTypes>(
       "paranext-extension-template.quick-verse",
       engine
     );

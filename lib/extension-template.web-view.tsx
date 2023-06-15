@@ -1,7 +1,8 @@
 import papi from "papi-frontend";
 import { useState } from "react";
-import { QuickVerseDataProvider, QuickVerseDataTypes } from "extension-types";
+import { ExtensionVerseDataProvider, ExtensionVerseDataTypes } from "extension-types";
 import { Button } from "papi-components";
+import { QuickVerseDataTypes } from "papi-extensions/quick-verse/quick-verse";
 
 const {
   react: {
@@ -13,20 +14,27 @@ const {
 globalThis.webViewComponent = function () {
   const [clicks, setClicks] = useState(0);
 
-  const quickVerseDataProvider = useDataProvider<QuickVerseDataProvider>(
+  const extensionVerseDataProvider = useDataProvider<ExtensionVerseDataProvider>(
     "paranext-extension-template.quick-verse"
   );
 
-  const [latestVerseText] = useData.Verse<QuickVerseDataTypes, 'Verse'>(
-    quickVerseDataProvider,
+  const [latestExtensionVerseText] = useData.Verse<ExtensionVerseDataTypes, 'Verse'>(
+    extensionVerseDataProvider,
     "latest",
-    "Loading latest Scripture text..."
+    "Loading latest Scripture text from extension template..."
+  );
+
+  const [latestQuickVerseText] = useData.Verse<QuickVerseDataTypes, 'Verse'>(
+    'quick-verse.quick-verse',
+    "latest",
+    "Loading latest Scripture text from extension template..."
   );
 
   return (
     <>
       <div className="title">Extension Template <span className="framework">React</span></div>
-      <div>{latestVerseText}</div>
+      <div>{latestExtensionVerseText}</div>
+      <div>{latestQuickVerseText}</div>
       <div>
         <Button
           onClick={async () => {

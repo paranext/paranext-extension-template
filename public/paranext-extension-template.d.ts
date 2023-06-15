@@ -1,10 +1,10 @@
 import type { DataProviderDataType } from "shared/models/data-provider.model";
 import type IDataProvider from "shared/models/data-provider.interface";
 
-export type QuickVerseSetData = string | { text: string; isHeresy: boolean };
+export type ExtensionVerseSetData = string | { text: string; isHeresy: boolean };
 
-export type QuickVerseDataTypes = {
-  Verse: DataProviderDataType<string, string | undefined, QuickVerseSetData>;
+export type ExtensionVerseDataTypes = {
+  Verse: DataProviderDataType<string, string | undefined, ExtensionVerseSetData>;
   Heresy: DataProviderDataType<string, string | undefined, string>;
   Chapter: DataProviderDataType<
     [book: string, chapter: number],
@@ -13,4 +13,4 @@ export type QuickVerseDataTypes = {
   >;
 };
 
-export type QuickVerseDataProvider = IDataProvider<QuickVerseDataTypes>;
+export type ExtensionVerseDataProvider = IDataProvider<ExtensionVerseDataTypes>;
