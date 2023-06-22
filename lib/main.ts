@@ -1,4 +1,4 @@
-import papi from "papi";
+import papi from "papi-backend";
 import IDataProviderEngine from "shared/models/data-provider-engine.model";
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
 import extensionTemplateReact from "./extension-template.web-view";

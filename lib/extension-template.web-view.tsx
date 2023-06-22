@@ -1,4 +1,4 @@
-import papi from "papi";
+import papi from "papi-frontend";
 import { useState } from "react";
 import { QuickVerseDataProvider, QuickVerseDataTypes } from "extension-types";
 import { Button } from "papi-components";
@@ -10,7 +10,7 @@ const {
   logger,
 } = papi;
 
-globalThis.webViewComponent = function() {
+globalThis.webViewComponent = function () {
   const [clicks, setClicks] = useState(0);
 
   const quickVerseDataProvider = useDataProvider<QuickVerseDataProvider>(
