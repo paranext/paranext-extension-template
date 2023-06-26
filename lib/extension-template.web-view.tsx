@@ -1,8 +1,8 @@
 import papi from "papi-frontend";
 import { useState } from "react";
-import { ExtensionVerseDataProvider, ExtensionVerseDataTypes } from "extension-types";
+import { ExtensionVerseDataProvider, ExtensionVerseDataTypes } from "paranext-extension-template";
 import { Button } from "papi-components";
-import { QuickVerseDataTypes } from "papi-extensions/quick-verse/quick-verse";
+import { QuickVerseDataTypes } from "quick-verse";
 
 const {
   react: {

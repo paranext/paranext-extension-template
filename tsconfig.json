@@ -15,11 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "typeRoots": ["node_modules/@types", "node_modules/papi-dts", "../paranext-core/extensions/dist"],
-    "paths": {
-      "extension-types": ["./public/paranext-extension-template"],
-      "papi-extensions/*": ["../paranext-core/extensions/dist/*"]
-    },
+    "typeRoots": ["node_modules/@types", "../paranext-core/lib", "../paranext-core/extensions/dist", "./public"],
     "experimentalDecorators": true,
   },
   "include": ["lib", "public/paranext-extension-template.d.ts"],
