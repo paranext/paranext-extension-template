@@ -8,7 +8,7 @@ import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
-import { ExtensionVerseDataTypes } from "extension-types";
+import { ExtensionVerseDataTypes } from "paranext-extension-template";
 import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
 import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
 import { ExecutionToken } from "node/models/execution-token.model";
