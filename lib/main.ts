@@ -8,7 +8,7 @@ import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
-import { QuickVerseDataTypes } from "extension-types";
+import { QuickVerseDataTypes, UsfmDataProvider } from "extension-types";
 import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
 import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
 import { ExecutionToken } from "node/models/execution-token.model";
@@ -26,7 +26,7 @@ type QuickVerseSetData = string | { text: string; isHeresy: boolean };
 /**
  * Example data provider engine that provides easy access to Scripture from an internet API.
  *
- * It has two data types:
+ * It has three data types:
  *  - Verse: get a portion of Scripture by its reference. You can also change the Scripture at a
  *    reference, but you have to clarify that you are heretical because you really shouldn't change
  *    published Scriptures like this ;)
@@ -72,7 +72,9 @@ class QuickVerseDataProviderEngine
   verses: { [scrRef: string]: { text: string; isChanged?: boolean } } = {};
 
   /** Latest updated verse reference */
-  latestVerseRef = 'john 11:35';
+  latestVerseRef = 'JHN 11:35';
+
+  usfmDataProviderPromise = papi.dataProvider.get<UsfmDataProvider>('usfm');
 
   /** Number of times any verse has been modified by a user this session */
   heresyCount = 0;
@@ -173,27 +175,26 @@ class QuickVerseDataProviderEngine
   getVerse = async (verseRef: string) => {
     // Just get notifications of updates with the 'notify' selector
     if (verseRef === 'notify') return undefined;
+    const selector = this.#getSelector(verseRef);
 
-    let responseVerse = this.verses[this.#getSelector(verseRef)];
+    // Look up the cached data first
+    let responseVerse = this.verses[selector];
 
     // If we don't already have the verse cached, cache it
     if (!responseVerse) {
       // Fetch the verse, cache it, and return it
       try {
-        const verseResponse = await papi.fetch(
-          `https://bible-api.com/${encodeURIComponent(this.#getSelector(verseRef))}`,
-        );
-        const verseData = await verseResponse.json();
-        const text = verseData.text.trim().replaceAll('\n', ' ');
-        responseVerse = { text };
-        this.verses[this.#getSelector(verseRef)] = responseVerse;
+        const usfmDataProvider = await this.usfmDataProviderPromise;
+        if (!usfmDataProvider) throw Error('Unable to get USFM data provider');
+        const verseData = usfmDataProvider.getVerse({ verseString: selector });
+        responseVerse = { text: (await verseData) ?? `${selector} not found` };
         // Cache the verse text, track the latest cached verse, and send an update
-        if (verseRef !== 'latest') this.latestVerseRef = this.#getSelector(verseRef);
-        // Inform everyone that we updated
+        this.verses[selector] = responseVerse;
+        this.latestVerseRef = selector;
         this.notifyUpdate();
       } catch (e) {
         responseVerse = {
-          text: `Failed to fetch ${verseRef} from bible-api! Reason: ${e}`,
+          text: `Failed to fetch ${selector} from USFM data provider! Reason: ${e}`,
         };
       }
     }
@@ -264,7 +265,7 @@ class QuickVerseDataProviderEngine
    * @returns selector for use internally
    */
   #getSelector(selector: string) {
-    const selectorL = selector.toLowerCase();
+    const selectorL = selector.toLowerCase().trim();
     return selectorL === 'latest' ? this.latestVerseRef : selectorL;
   }
 }
