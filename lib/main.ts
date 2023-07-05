@@ -177,7 +177,7 @@ class QuickVerseDataProviderEngine
     if (verseRef === 'notify') return undefined;
     const selector = this.#getSelector(verseRef);
 
-    // Lookup the cached data first
+    // Look up the cached data first
     let responseVerse = this.verses[selector];
 
     // If we don't already have the verse cached, cache it
