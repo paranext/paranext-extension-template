@@ -3,7 +3,7 @@ import type IDataProvider from "shared/models/data-provider.interface";
 
 declare module 'paranext-extension-template' {
   export type ExtensionVerseSetData = string | { text: string; isHeresy: boolean };
-  
+
   export type ExtensionVerseDataTypes = {
     Verse: DataProviderDataType<string, string | undefined, ExtensionVerseSetData>;
     Heresy: DataProviderDataType<string, string | undefined, string>;
@@ -13,7 +13,7 @@ declare module 'paranext-extension-template' {
       never
     >;
   };
-  
+
   export type ExtensionVerseDataProvider = IDataProvider<ExtensionVerseDataTypes>;
 }
 
