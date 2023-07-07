@@ -40,12 +40,12 @@ globalThis.webViewComponent = function () {
           onClick={async () => {
             const start = performance.now();
             const result = await papi.commands.sendCommand(
-              "extension-template.do-stuff",
+              "extensionTemplate.doStuff",
               "Extension Template React Component"
             );
             setClicks((currentClicks) => currentClicks + 1);
             logger.info(
-              `command:extension-template.do-stuff '${result}' took ${
+              `command:extensionTemplate.doStuff '${result}' took ${
                 performance.now() - start
               } ms`
             );

@@ -8,7 +8,7 @@ import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
-import { ExtensionVerseDataTypes } from "paranext-extension-template";
+import { ExtensionVerseDataTypes, ExtensionVerseSetData } from "paranext-extension-template";
 import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
 import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
 import { ExecutionToken } from "node/models/execution-token.model";
@@ -20,8 +20,6 @@ const { logger, dataProvider: { DataProviderEngine } } = papi;
 console.log(import.meta.env.PROD);
 
 logger.info("Extension template is importing!");
-
-type QuickVerseSetData = string | { text: string; isHeresy: boolean };
 
 /**
  * Example data provider engine that provides easy access to Scripture from an internet API.
@@ -102,7 +100,7 @@ class QuickVerseDataProviderEngine
   @papi.dataProvider.decorators.ignore
   async setInternal(
     selector: string,
-    data: QuickVerseSetData,
+    data: ExtensionVerseSetData,
   ): Promise<DataProviderUpdateInstructions<ExtensionVerseDataTypes>> {
     // Just get notifications of updates with the 'notify' selector. Nothing to change
     if (selector === 'notify') return false;
@@ -140,7 +138,7 @@ class QuickVerseDataProviderEngine
    * Note: this method is used when someone uses the `useData.Verse` hook on the data
    * provider papi creates for this engine.
    */
-  async setVerse(verseRef: string, data: QuickVerseSetData) {
+  async setVerse(verseRef: string, data: ExtensionVerseSetData) {
     return this.setInternal(verseRef, data);
   }
 
@@ -351,7 +349,7 @@ export async function activate(context: ExecutionActivationContext) {
 
   const unsubPromises = [
     papi.commands.registerCommand(
-      "extension-template.do-stuff",
+      "extensionTemplate.doStuff",
       (message: string) => {
         return `The template did stuff! ${message}`;
       }

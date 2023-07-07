@@ -17,3 +17,9 @@ declare module 'paranext-extension-template' {
   export type ExtensionVerseDataProvider = IDataProvider<ExtensionVerseDataTypes>;
 }
 
+declare module "papi-commands" {
+  export interface CommandHandlers {
+    "extensionTemplate.doStuff": (message: string) => string;
+  }
+}
+
