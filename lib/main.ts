@@ -269,7 +269,7 @@ class QuickVerseDataProviderEngine
   }
 }
 
-const htmlWebViewType = "paranext-extension-template.html";
+const htmlWebViewType = "paranextExtensionTemplate.html";
 
 /**
  * Simple web view provider that provides sample html web views when papi requests them
@@ -291,7 +291,7 @@ const htmlWebViewProvider: IWebViewProvider = {
   },
 };
 
-const reactWebViewType = "paranext-extension-template.react";
+const reactWebViewType = "paranextExtensionTemplate.react";
 
 /**
  * Simple web view provider that provides React web views when papi requests them
@@ -335,7 +335,7 @@ export async function activate(context: ExecutionActivationContext) {
 
   const quickVerseDataProviderPromise =
     papi.dataProvider.registerEngine<ExtensionVerseDataTypes>(
-      "paranext-extension-template.quick-verse",
+      "paranextExtensionTemplate.quickVerse",
       engine
     );
 
