@@ -1,10 +1,8 @@
 import papi from "papi-backend";
 import IDataProviderEngine from "shared/models/data-provider-engine.model";
-// @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
-import extensionTemplateReact from "./extension-template.web-view";
-import extensionTemplateReactStyles from "./extension-template.web-view.scss?inline";
-// @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
-import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
+import extensionTemplateReact from "./extension-template.web-view?bundled";
+import extensionTemplateReactStyles from "./extension-template.web-view.scss?bundled";
+import extensionTemplateHtml from "./extension-template-html.web-view.ejs?bundled";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
@@ -18,7 +16,7 @@ import type { UsfmDataProvider } from "usfm-data-provider";
 
 const { logger, dataProvider: { DataProviderEngine } } = papi;
 
-console.log(import.meta.env.PROD);
+console.log(process.env.NODE_ENV);
 
 logger.info("Extension template is importing!");
 

@@ -1,23 +1,53 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    // For some reason, ESNext produces the following error:
+    //   ReferenceError: Must call super constructor in derived class before accessing 'this' or
+    //   returning from derived constructor
+    // Seems it has something to do with some syntax issue in the minification process - putting a
+    // semicolon after `super()` in the bundle fixes the problem.
+    "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": false,
+    // Having this enabled was adding erring code to webviews, so it only runs in ts-node
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
+    // Paranext requires modules to be CommonJS
+    // Running webpack.config.ts also requires CommonJS
+    // https://webpack.js.org/configuration/configuration-languages/#typescript
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "typeRoots": ["node_modules/@types", "../paranext-core/lib", "../paranext-core/extensions/lib", "./public"],
+    // Paranext requires using React.createElement, not jsx-runtime
+    "jsx": "react",
+    "typeRoots": [
+      "node_modules/@types",
+      "../paranext-core/lib",
+      "../paranext-core/extensions/lib",
+      "./public"
+    ],
+    // Papi exposes decorators for use in classes
     "experimentalDecorators": true,
+    // We want sourcemaps to inline with webpack
+    "sourceMap": true,
+    // We need a baseurl for webpack's tsconfig path aliases plugin
+    "baseUrl": "./"
   },
   "include": ["lib", "public/paranext-extension-template.d.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "ts-node": {
+    // This allows us to use path aliases in ts-node
+    "require": ["tsconfig-paths/register"],
+    "compilerOptions": {
+      // ts-node needs this to load webpack.config.ts for some reason. Errs otherwise
+      // https://webpack.js.org/configuration/configuration-languages/#typescript
+      // Using a separate config file just for webpack.config.ts by using environment variable
+      // TS_NODE_PROJECT was making tsconfig-paths-webpack-plugin use the other config, not this
+      // original tsconfig.json, so these path aliases wouldn't work
+      // If this is ever a problem, we can easily fix it
+      "esModuleInterop": true
+    }
+  }
 }
