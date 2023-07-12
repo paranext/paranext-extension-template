@@ -23,3 +23,6 @@ dist-ssr
 
 # Vite-built temp WebView files
 temp-vite
+
+# Webpack-built temp WebView files
+temp-webpack

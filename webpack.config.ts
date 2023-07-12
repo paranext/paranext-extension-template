@@ -2,42 +2,32 @@ import webpack from "webpack";
 import path from "path";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
+import { merge } from "webpack-merge";
 
 // Using a .ts file as the webpack config requires not having "type": "module" in package.json
 // https://stackoverflow.com/a/76005614
 
 const devMode = process.env.NODE_ENV !== "production";
 
-const config: webpack.Configuration = {
-  // extension main source file
-  entry: "./lib/main.ts",
+const configBase: webpack.Configuration = {
   // Bundle the sourcemap into the file since webviews are injected as strings into the main file
   devtool: "inline-source-map",
   // Use require for externals https://webpack.js.org/configuration/externals/#externalstypecommonjs
   externalsType: "commonjs",
   // Modules that Paranext supplies to extensions https://webpack.js.org/configuration/externals/
   externals: ["react", "react-dom", "papi-frontend", "papi-backend"],
-  output: {
-    // extension main output file
-    filename: "paranext-extension-template.js",
-    // extension output directory
-    path: path.resolve(__dirname, "dist"),
-    // Exporting the library https://webpack.js.org/guides/author-libraries/#expose-the-library
-    globalObject: "globalThis",
-    library: {
-      name: "paranextExtensionTemplate",
-      type: "umd",
-    },
-    // Empty the dist folder before building
-    clean: true,
-  },
   module: {
     rules: [
-      // Import fully transformed files as strings with "file?bundled" (this must be the first rule
-      // in order to be applied after all other transformations)
+      /**
+       * Import fully transformed files as strings with "./file?transformed"
+       *
+       * WARNING: These files are NOT bundled. The rules are applied, but webpack does not bundle
+       * these files before providing them, unfortunately.
+       */
+      // This must be the first rule in order to be applied after all other transformations
       // https://webpack.js.org/guides/asset-modules/#replacing-inline-loader-syntax
       {
-        resourceQuery: /bundled/,
+        resourceQuery: /transformed/,
         type: "asset/source",
       },
       // Load TypeScript https://webpack.js.org/guides/typescript/#basic-setup
@@ -52,7 +42,10 @@ const config: webpack.Configuration = {
         },
         exclude: /node_modules/,
       },
-      // Load scss and css https://webpack.js.org/loaders/sass-loader/#getting-started
+      /**
+       * Import scss, sass, and css files as strings
+       */
+      //https://webpack.js.org/loaders/sass-loader/#getting-started
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
@@ -77,6 +70,15 @@ const config: webpack.Configuration = {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: "asset/resource",
       },
+      /**
+       * Import files with no transformation as strings with "./file?raw"
+       */
+      // This must be the last rule in order to be applied before all other transformations
+      // https://webpack.js.org/guides/asset-modules/#replacing-inline-loader-syntax
+      {
+        resourceQuery: /raw/,
+        type: "asset/source",
+      },
     ],
   },
   resolve: {
@@ -88,6 +90,39 @@ const config: webpack.Configuration = {
       new TsconfigPathsPlugin(),
     ],
   },
+};
+
+const configWebView: webpack.Configuration = {
+  // configuration name so we can depend on it in main
+  name: "webView",
+  // extension webview source file
+  entry: "./lib/extension-template.web-view.tsx",
+  output: {
+    path: __dirname,
+    filename: "./lib/temp-webpack/extension-template.web-view.js",
+  },
+};
+
+const configMain: webpack.Configuration = {
+  // configuration name
+  name: "main",
+  // extension main source file
+  entry: "./lib/main.ts",
+  // wait until webView bundling finishes
+  dependencies: ["webView"],
+  output: {
+    // extension output directory
+    path: path.resolve(__dirname, "dist"),
+    filename: "paranext-extension-template.js",
+    // Exporting the library https://webpack.js.org/guides/author-libraries/#expose-the-library
+    globalObject: "globalThis",
+    library: {
+      name: "paranextExtensionTemplate",
+      type: "umd",
+    },
+    // Empty the dist folder before building
+    clean: true,
+  },
   plugins: [
     // Copy static files to the output folder https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyPlugin({
@@ -96,5 +131,10 @@ const config: webpack.Configuration = {
     }),
   ],
 };
+
+const config: webpack.Configuration[] = [
+  merge(configBase, configWebView),
+  merge(configBase, configMain),
+];
 
 export default config;

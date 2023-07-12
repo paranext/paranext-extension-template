@@ -30,9 +30,9 @@
     "css-loader": "^6.8.1",
     "escape-string-regexp": "^5.0.0",
     "glob": "^10.2.2",
+    "papi-components": "file:../paranext-core/lib/papi-components",
     "papi-dts": "file:../paranext-core/lib/papi-dts",
     "patch-package": "^7.0.0",
-    "papi-components": "file:../paranext-core/lib/papi-components",
     "rollup-plugin-import-manager": "^0.6.3",
     "rollup-plugin-string": "^3.0.0",
     "sass": "^1.62.1",
@@ -44,6 +44,7 @@
     "typescript": "^5.1.3",
     "vite": "^4.3.9",
     "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.9.0"
   }
 }

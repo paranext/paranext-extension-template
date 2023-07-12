@@ -1,8 +1,8 @@
 import papi from "papi-backend";
 import IDataProviderEngine from "shared/models/data-provider-engine.model";
-import extensionTemplateReact from "./extension-template.web-view?bundled";
-import extensionTemplateReactStyles from "./extension-template.web-view.scss?bundled";
-import extensionTemplateHtml from "./extension-template-html.web-view.ejs?bundled";
+import extensionTemplateReact from "./temp-webpack/extension-template.web-view?raw";
+import extensionTemplateReactStyles from "./extension-template.web-view.scss";
+import extensionTemplateHtml from "./extension-template-html.web-view.ejs?transformed";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
