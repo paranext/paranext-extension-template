@@ -8,20 +8,19 @@ import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
-import { QuickVerseDataTypes, UsfmDataProvider } from "extension-types";
+import { ExtensionVerseDataTypes, ExtensionVerseSetData } from "paranext-extension-template";
 import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
 import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
 import { ExecutionToken } from "node/models/execution-token.model";
 import { UnsubscriberAsync } from "shared/utils/papi-util";
 import type { IWebViewProvider } from "shared/models/web-view-provider.model";
+import type { UsfmDataProvider } from "usfm-data-provider";
 
 const { logger, dataProvider: { DataProviderEngine } } = papi;
 
 console.log(import.meta.env.PROD);
 
 logger.info("Extension template is importing!");
-
-type QuickVerseSetData = string | { text: string; isHeresy: boolean };
 
 /**
  * Example data provider engine that provides easy access to Scripture from an internet API.
@@ -61,8 +60,8 @@ type QuickVerseSetData = string | { text: string; isHeresy: boolean };
  * define a data provider engine with an object. An example of this is found in `hello-someone.ts`.
  */
 class QuickVerseDataProviderEngine
-  extends DataProviderEngine<QuickVerseDataTypes>
-  implements IDataProviderEngine<QuickVerseDataTypes>
+  extends DataProviderEngine<ExtensionVerseDataTypes>
+  implements IDataProviderEngine<ExtensionVerseDataTypes>
 {
   /**
    * Verses stored by the Data Provider.
@@ -104,8 +103,8 @@ class QuickVerseDataProviderEngine
   @papi.dataProvider.decorators.ignore
   async setInternal(
     selector: string,
-    data: QuickVerseSetData,
-  ): Promise<DataProviderUpdateInstructions<QuickVerseDataTypes>> {
+    data: ExtensionVerseSetData,
+  ): Promise<DataProviderUpdateInstructions<ExtensionVerseDataTypes>> {
     // Just get notifications of updates with the 'notify' selector. Nothing to change
     if (selector === 'notify') return false;
 
@@ -142,7 +141,7 @@ class QuickVerseDataProviderEngine
    * Note: this method is used when someone uses the `useData.Verse` hook on the data
    * provider papi creates for this engine.
    */
-  async setVerse(verseRef: string, data: QuickVerseSetData) {
+  async setVerse(verseRef: string, data: ExtensionVerseSetData) {
     return this.setInternal(verseRef, data);
   }
 
@@ -270,7 +269,7 @@ class QuickVerseDataProviderEngine
   }
 }
 
-const htmlWebViewType = "paranext-extension-template.html";
+const htmlWebViewType = "paranextExtensionTemplate.html";
 
 /**
  * Simple web view provider that provides sample html web views when papi requests them
@@ -292,7 +291,7 @@ const htmlWebViewProvider: IWebViewProvider = {
   },
 };
 
-const reactWebViewType = "paranext-extension-template.react";
+const reactWebViewType = "paranextExtensionTemplate.react";
 
 /**
  * Simple web view provider that provides React web views when papi requests them
@@ -335,8 +334,8 @@ export async function activate(context: ExecutionActivationContext) {
   engine.heresyCount = storedHeresyCount;
 
   const quickVerseDataProviderPromise =
-    papi.dataProvider.registerEngine<QuickVerseDataTypes>(
-      "paranext-extension-template.quick-verse",
+    papi.dataProvider.registerEngine<ExtensionVerseDataTypes>(
+      "paranextExtensionTemplate.quickVerse",
       engine
     );
 
@@ -352,7 +351,7 @@ export async function activate(context: ExecutionActivationContext) {
 
   const unsubPromises = [
     papi.commands.registerCommand(
-      "extension-template.do-stuff",
+      "extensionTemplate.doStuff",
       (message: string) => {
         return `The template did stuff! ${message}`;
       }
