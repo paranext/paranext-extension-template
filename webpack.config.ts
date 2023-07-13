@@ -3,6 +3,7 @@ import path from "path";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
 import { merge } from "webpack-merge";
+import { glob } from "glob";
 
 // Note: Using a .ts file as the webpack config requires not having "type": "module" in package.json
 // https://stackoverflow.com/a/76005614
@@ -108,30 +109,49 @@ const configBase: webpack.Configuration = {
 };
 
 /**
+ * Glob filename matcher for React web views.
+ * React Web Views should be named <name>.web-view.tsx
+ */
+const webViewTsxGlob = "**/*.web-view.tsx";
+/** Name of adjacent folder used to store bundled WebView files */
+export const webViewTempDir = "temp-webpack";
+
+/**
+ * Get a list of TypeScript WebView files to bundle.
+ * Path relative to project root
+ */
+function getWebViewTsxPaths() {
+  return glob(webViewTsxGlob, { ignore: "node_modules/**" });
+}
+
+/**
+ * Gets the bundled WebView path for a WebView file path
+ * @param webViewPath relative path to webView e.g. './lib/extension-template.web-view.tsx'
+ * @returns WebView path with temporary WebView directory inserted into the module path
+ */
+function getWebViewTempPath(webViewPath: string) {
+  const webViewInfo = path.parse(webViewPath);
+  // Put transpiled WebViews in a temp folder in the same directory as the original WebView
+  return path.join(webViewInfo.dir, webViewTempDir, `${webViewInfo.name}.js`);
+}
+
+/**
  * Get webpack entry configuration to build each web-view source file and put it in a temp-webpack
  * folder in the same directory
  * @returns promise that resolves to the webView entry config
  */
 async function getWebViewEntries(): Promise<webpack.EntryObject> {
   console.log("getting webview entries!");
-  let res;
-  const promise = new Promise<webpack.EntryObject>((resolve) => {
-    res = resolve;
-  });
-  setTimeout(() => {
-    console.log("resolving!");
-    res({
-      1: {
-        import: "./lib/extension-template.web-view.tsx",
-        filename: "./lib/temp-webpack/extension-template.web-view.js",
+  const tsxWebViews = await getWebViewTsxPaths();
+  return Object.fromEntries(
+    tsxWebViews.map((webViewPath) => [
+      webViewPath,
+      {
+        import: webViewPath,
+        filename: getWebViewTempPath(webViewPath),
       },
-      2: {
-        import: "./lib/extension-template-2.web-view.tsx",
-        filename: "./lib/temp-webpack/extension-template-2.web-view.js",
-      },
-    });
-  }, 1000);
-  return promise;
+    ])
+  );
 }
 
 /** webpack configuration for building webViews */
