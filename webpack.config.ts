@@ -15,7 +15,14 @@ const configBase: webpack.Configuration = {
   // Use require for externals https://webpack.js.org/configuration/externals/#externalstypecommonjs
   externalsType: "commonjs",
   // Modules that Paranext supplies to extensions https://webpack.js.org/configuration/externals/
-  externals: ["react", "react-dom", "papi-frontend", "papi-backend"],
+  externals: [
+    "react",
+    "react/jsx-runtime",
+    "react-dom",
+    "react-dom/client",
+    "papi-frontend",
+    "papi-backend",
+  ],
   module: {
     rules: [
       /**
