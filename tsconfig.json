@@ -27,10 +27,15 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "typeRoots": [
+      // Include default type declarations
       "node_modules/@types",
+      // Include papi-dts type declarations (for papi.d.ts)
       "../paranext-core/lib",
+      // Include other extensions' type declarations
       "../paranext-core/extensions/lib",
-      "./public"
+      // Include this extension's type declarations. It's in this weird location so there aren't any
+      // unexpected files there for typeRoots to get upset about
+      "lib/types"
     ],
     // Papi exposes decorators for use in classes
     "experimentalDecorators": true,
@@ -39,9 +44,9 @@
     // We need a baseurl for webpack's tsconfig path aliases plugin
     "baseUrl": "./"
   },
-  "include": ["lib", "public/paranext-extension-template.d.ts"],
+  "include": ["lib"],
   "ts-node": {
     // This allows us to use path aliases in ts-node
-    "require": ["tsconfig-paths/register"],
+    "require": ["tsconfig-paths/register"]
   }
 }

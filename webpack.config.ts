@@ -4,17 +4,25 @@ import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
 import { merge } from "webpack-merge";
 
-// Using a .ts file as the webpack config requires not having "type": "module" in package.json
+// Note: Using a .ts file as the webpack config requires not having "type": "module" in package.json
 // https://stackoverflow.com/a/76005614
 
 const devMode = process.env.NODE_ENV !== "production";
 
+// Note: we do not want to do any chunking because neither webViews nor main can import dependencies
+// other than those listed in configBase.externals. Each webView must contain all its dependency
+// code, and main must contain all its dependency code.
+/** webpack configuration shared by webView building and main building */
 const configBase: webpack.Configuration = {
   // Bundle the sourcemap into the file since webviews are injected as strings into the main file
-  devtool: "inline-source-map",
+  devtool: devMode ? "inline-source-map" : false,
+  watchOptions: {
+    ignored: ["**/node_modules"],
+  },
   // Use require for externals https://webpack.js.org/configuration/externals/#externalstypecommonjs
   externalsType: "commonjs",
   // Modules that Paranext supplies to extensions https://webpack.js.org/configuration/externals/
+  // All other dependencies must be bundled into the extension
   externals: [
     "react",
     "react/jsx-runtime",
@@ -99,29 +107,49 @@ const configBase: webpack.Configuration = {
   },
 };
 
-const configWebView: webpack.Configuration = {
+/**
+ * Get webpack entry configuration to build each web-view source file and put it in a temp-webpack
+ * folder in the same directory
+ * @returns promise that resolves to the webView entry config
+ */
+async function getWebViewEntries(): Promise<webpack.EntryObject> {
+  console.log("getting webview entries!");
+  let res;
+  const promise = new Promise<webpack.EntryObject>((resolve) => {
+    res = resolve;
+  });
+  setTimeout(() => {
+    console.log("resolving!");
+    res({
+      1: {
+        import: "./lib/extension-template.web-view.tsx",
+        filename: "./lib/temp-webpack/extension-template.web-view.js",
+      },
+      2: {
+        import: "./lib/extension-template-2.web-view.tsx",
+        filename: "./lib/temp-webpack/extension-template-2.web-view.js",
+      },
+    });
+  }, 1000);
+  return promise;
+}
+
+/** webpack configuration for building webViews */
+const configWebView: webpack.Configuration = merge(configBase, {
   // configuration name so we can depend on it in main
   name: "webView",
-  // extension webview source file
-  entry: {
-    1: {
-      import: "./lib/extension-template.web-view.tsx",
-      filename: "./lib/temp-webpack/extension-template.web-view.js",
-    },
-    2: {
-      import: "./lib/extension-template-2.web-view.tsx",
-      filename: "./lib/temp-webpack/extension-template-2.web-view.js",
-    },
-  },
+  // instructions to build each extension webview source file
+  entry: getWebViewEntries,
   output: {
     path: __dirname,
   },
-};
+});
 
-const configMain: webpack.Configuration = {
+/** webpack configuration for building main */
+const configMain: webpack.Configuration = merge(configBase, {
   // configuration name
   name: "main",
-  // extension main source file
+  // extension main source file to build
   entry: "./lib/main.ts",
   // wait until webView bundling finishes
   dependencies: ["webView"],
@@ -141,15 +169,16 @@ const configMain: webpack.Configuration = {
   plugins: [
     // Copy static files to the output folder https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyPlugin({
-      // We want all files from the public folder copied into the output folder
-      patterns: [{ from: "public", to: "./" }],
+      patterns: [
+        // We want all files from the public folder copied into the output folder
+        { from: "public", to: "./" },
+        // Copy this extension's type declaration file into the output folder
+        { from: "lib/types/paranext-extension-template.d.ts", to: "./" },
+      ],
     }),
   ],
-};
+});
 
-const config: webpack.Configuration[] = [
-  merge(configBase, configWebView),
-  merge(configBase, configMain),
-];
+const config: webpack.Configuration[] = [configWebView, configMain];
 
 export default config;

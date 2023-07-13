@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack",
+    "build": "cross-env TS_NODE_TRANSPILE_ONLY=true webpack",
+    "watch": "npm run build:main -- --watch",
+    "build:production": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack",
     "build:vite1": "vite build --config vite/vite-web-view.config.ts",
     "build:vite2": "vite build --config vite/vite.config.ts",
     "build:vite": "npm run build:vite1 && npm run build:vite2",
