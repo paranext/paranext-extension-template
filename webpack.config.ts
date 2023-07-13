@@ -103,10 +103,18 @@ const configWebView: webpack.Configuration = {
   // configuration name so we can depend on it in main
   name: "webView",
   // extension webview source file
-  entry: "./lib/extension-template.web-view.tsx",
+  entry: {
+    1: {
+      import: "./lib/extension-template.web-view.tsx",
+      filename: "./lib/temp-webpack/extension-template.web-view.js",
+    },
+    2: {
+      import: "./lib/extension-template-2.web-view.tsx",
+      filename: "./lib/temp-webpack/extension-template-2.web-view.js",
+    },
+  },
   output: {
     path: __dirname,
-    filename: "./lib/temp-webpack/extension-template.web-view.js",
   },
 };
 

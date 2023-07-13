@@ -1,6 +1,7 @@
 import papi from "papi-backend";
 import IDataProviderEngine from "shared/models/data-provider-engine.model";
 import extensionTemplateReact from "./temp-webpack/extension-template.web-view?raw";
+import extensionTemplateReact2 from "./temp-webpack/extension-template-2.web-view?raw";
 import extensionTemplateReactStyles from "./extension-template.web-view.scss";
 import extensionTemplateHtml from "./extension-template-html.web-view.ejs?transformed";
 import type { SavedWebViewDefinition,
@@ -311,6 +312,26 @@ const reactWebViewProvider: IWebViewProvider = {
   },
 };
 
+const reactWebViewType2 = "paranextExtensionTemplate.react2";
+
+/**
+ * Simple web view provider that provides React web views when papi requests them
+ */
+const reactWebViewProvider2: IWebViewProvider = {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
+    if (savedWebView.webViewType !== reactWebViewType2)
+      throw new Error(
+        `${reactWebViewType2} provider received request to provide a ${savedWebView.webViewType} web view`
+      );
+    return {
+      ...savedWebView,
+      title: "Extension Template React 2",
+      content: extensionTemplateReact2,
+      styles: extensionTemplateReactStyles,
+    };
+  },
+};
+
 export async function activate(context: ExecutionActivationContext) {
   logger.info("Extension template is activating!");
 
@@ -347,6 +368,11 @@ export async function activate(context: ExecutionActivationContext) {
     reactWebViewProvider
   );
 
+  const reactWebViewProvider2Promise = papi.webViewProviders.register(
+    reactWebViewType2,
+    reactWebViewProvider2
+  );
+
   const unsubPromises = [
     papi.commands.registerCommand(
       "extensionTemplate.doStuff",
@@ -363,11 +389,13 @@ export async function activate(context: ExecutionActivationContext) {
   // an existing webview that was specifically created by `paranext-core's hello-someone`.
   papi.webViews.getWebView(htmlWebViewType, undefined, { existingId: "?" });
   papi.webViews.getWebView(reactWebViewType, undefined, { existingId: "?" });
+  papi.webViews.getWebView(reactWebViewType2, undefined, { existingId: "?" });
 
   // For now, let's just make things easy and await the data provider promise at the end so we don't hold everything else up
   const quickVerseDataProvider = await quickVerseDataProviderPromise;
   const htmlWebViewProviderResolved = await htmlWebViewProviderPromise;
   const reactWebViewProviderResolved = await reactWebViewProviderPromise;
+  const reactWebViewProvider2Resolved = await reactWebViewProvider2Promise;
 
   const combinedUnsubscriber: UnsubscriberAsync =
     papi.util.aggregateUnsubscriberAsyncs(
@@ -375,6 +403,7 @@ export async function activate(context: ExecutionActivationContext) {
         quickVerseDataProvider.dispose,
         htmlWebViewProviderResolved.dispose,
         reactWebViewProviderResolved.dispose,
+        reactWebViewProvider2Resolved.dispose,
       ])
     );
   logger.info("Extension template is finished activating!");
