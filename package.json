@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "cross-env TS_NODE_TRANSPILE_ONLY=true webpack",
-    "watch": "npm run build:main -- --watch",
+    "watch": "npm run build -- --watch",
     "build:production": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack",
     "start:core": "cd ../paranext-core && npm run start",
     "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:watch\" \"npm:start:core\"",

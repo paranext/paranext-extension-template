@@ -3,7 +3,7 @@ import IDataProviderEngine from "shared/models/data-provider-engine.model";
 import extensionTemplateReact from "./temp-webpack/extension-template.web-view?raw";
 import extensionTemplateReact2 from "./temp-webpack/extension-template-2.web-view?raw";
 import extensionTemplateReactStyles from "./extension-template.web-view.scss";
-import extensionTemplateHtml from "./extension-template-html.web-view.ejs?transformed";
+import extensionTemplateHtml from "./extension-template-html.web-view.html?transformed";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
