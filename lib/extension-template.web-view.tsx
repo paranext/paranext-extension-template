@@ -3,9 +3,6 @@ import { useState } from "react";
 import { ExtensionVerseDataProvider, ExtensionVerseDataTypes } from "paranext-extension-template";
 import { Button } from "papi-components";
 import { QuickVerseDataTypes } from "quick-verse";
-import { test } from "./test";
-
-console.log(test);
 
 const {
   react: {

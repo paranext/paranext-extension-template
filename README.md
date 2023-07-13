@@ -3,16 +3,17 @@ Basic extension template for Paranext
 
 ## Summary
 
-This is a Vite project template pre-configured to build Paranext extensions.
+This is a webpack project template pre-configured to build Paranext extensions.
 
  - `lib` contains the source code for the extension
    - `lib/main.ts` is the main entry file for the extension
+   - `lib/types/paranext-extension-template.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`
    - `*.web-view.tsx` files will be treated as React WebViews
    - `*.web-view.ejs` files will be treated as HTML WebViews
  - `public` contains static files that are transferred to the build folder
    - `public/manifest.json` is the manifest file that defines the extension
    - `public/package.json` defines the npm package for this extension and is required for Paranext to use it appropriately
-   - `public/paranext-extension-template.d.ts` is this extension's types file that other extensions can use
+   - `public/assets` contains asset files the extension and its WebViews can retrieve using the `papi-extension:` protocol
  - `dist` is a generated folder containing your built extension files
 
 ## To install
@@ -42,19 +43,19 @@ Note: The built extension will be in the `dist` folder. In order for Paranext to
 
 To watch extension files (in `lib`) for changes:
 
-`npm run start:vite`
+`npm run watch`
 
 To build the extension once:
 
-`npm run build:vite`
+`npm run build`
 
-## Vite Build Explanation
+## Webpack Build Explanation
 
-This extension template is built by Vite in two steps: a WebView transpilation step and a packaging step:
+This extension template is built by webpack in two steps: a WebView transpilation step and a packaging step:
 
 ## Build 1: TypeScript WebView transpilation
 
-Vite prepares TypeScript WebViews for use and outputs them into `temp-vite` folders adjacent to the WebView files:
+Webpack prepares TypeScript WebViews for use and outputs them into `temp-webpack` folders adjacent to the WebView files:
 - Formats WebViews to match how they should look to work in Paranext
 - Transpiles React/TypeScript WebViews into JavaScript
 - Packages dependencies into the WebViews
@@ -62,15 +63,9 @@ Vite prepares TypeScript WebViews for use and outputs them into `temp-vite` fold
 
 ## Built 2: Packaging
 
-Vite packages the extension together into the `dist` folder:
+Webpack packages the extension together into the `dist` folder:
 - Transpiles the main TypeScript file and its imported modules into JavaScript
 - Injects the WebViews into the main file
 - Packages dependencies into the main file
-- Generates sourcemaps for the file
-- Packages everything up into an extension folder in `dist`
-
-Note: When performing the second build step, the following line may occur in your console. Please feel free to ignore it as it is a false positive. It is likely showing because WebViews are embedded in the entry file:
-
-```bash
-transforming (1) lib\main.ts[plugin:ImportManager] It seems like there are multiple imports of module 'react'. You should examine that.
-```
+- Embeds Sourcemaps into the file inline
+- Packages everything up into an extension folder `dist`

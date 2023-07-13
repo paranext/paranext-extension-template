@@ -1,7 +1,7 @@
 {
   "name": "paranext-extension-template",
   "version": "0.0.1",
-  "description": "Extension template for Paranext. Powered by Vite",
+  "description": "Extension template for Paranext. Powered by webpack",
   "main": "paranext-extension-template.js",
   "types": "paranext-extension-template.d.ts",
   "scripts": {},
