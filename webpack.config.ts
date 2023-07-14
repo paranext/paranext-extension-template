@@ -37,15 +37,15 @@ const configBase: webpack.Configuration = {
   module: {
     rules: [
       /**
-       * Import fully transformed files as strings with "./file?transformed"
+       * Import fully loaded and transformed files as strings with "./file?inline"
        *
        * WARNING: These files are NOT bundled. The rules are applied, but webpack does not bundle
-       * these files before providing them, unfortunately.
+       * dependencies into these files before providing them, unfortunately.
        */
       // This must be the first rule in order to be applied after all other transformations
       // https://webpack.js.org/guides/asset-modules/#replacing-inline-loader-syntax
       {
-        resourceQuery: /transformed/,
+        resourceQuery: /inline/,
         type: "asset/source",
       },
       // Load TypeScript https://webpack.js.org/guides/typescript/#basic-setup
@@ -63,7 +63,7 @@ const configBase: webpack.Configuration = {
       /**
        * Import scss, sass, and css files as strings
        */
-      //https://webpack.js.org/loaders/sass-loader/#getting-started
+      // https://webpack.js.org/loaders/sass-loader/#getting-started
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
@@ -75,18 +75,27 @@ const configBase: webpack.Configuration = {
           "sass-loader",
         ],
       },
-      // Load images https://webpack.js.org/guides/asset-management/#loading-images
-      // TODO: Investigate how these files are bundled. Does this actually work?
+      /**
+       * Load images as data uris
+       *
+       * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
+       * not currently supported in Platform.Bible
+       */
+      // https://webpack.js.org/guides/asset-management/#loading-images
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: "asset/resource",
+        type: "asset/inline",
       },
-      // Consider using @svgr/webpack? https://www.npmjs.com/package/@svgr/webpack
-      // Load fonts https://webpack.js.org/guides/asset-management/#loading-fonts
-      // TODO: Investigate how these files are bundled. Does this actually work?
+      /**
+       * Load fonts as data uris
+       *
+       * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
+       * not currently supported in Platform.Bible
+       */
+      // https://webpack.js.org/guides/asset-management/#loading-fonts
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
-        type: "asset/resource",
+        type: "asset/inline",
       },
       /**
        * Import files with no transformation as strings with "./file?raw"
@@ -141,17 +150,6 @@ const configMain: webpack.Configuration = merge(configBase, {
     },
     // Empty the dist folder before building
     clean: true,
-  },
-  module: {
-    rules: [
-      {
-        resource: (...args) => {
-          console.log(JSON.stringify(args));
-          return false;
-        },
-        type: "asset/source",
-      },
-    ],
   },
   resolve: {
     plugins: [

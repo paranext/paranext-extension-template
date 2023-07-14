@@ -1,9 +1,9 @@
 import papi from "papi-backend";
 import IDataProviderEngine from "shared/models/data-provider-engine.model";
-import extensionTemplateReact from "./extension-template.web-view.tsx?raw";
-import extensionTemplateReact2 from "./extension-template-2.web-view.tsx?raw";
-import extensionTemplateReactStyles from "./extension-template.web-view.scss";
-import extensionTemplateHtml from "./extension-template-html.web-view.html?transformed";
+import extensionTemplateReact from "./extension-template.web-view.tsx?inline";
+import extensionTemplateReact2 from "./extension-template-2.web-view.tsx?inline";
+import extensionTemplateReactStyles from "./extension-template.web-view.scss?inline";
+import extensionTemplateHtml from "./extension-template-html.web-view.html?inline";
 import type { SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition } from "shared/data/web-view.model";
