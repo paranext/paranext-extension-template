@@ -339,12 +339,12 @@ export async function activate(context: ExecutionActivationContext) {
       engine
     );
 
-  const htmlWebViewProviderPromise = papi.webViews.registerWebViewProvider(
+  const htmlWebViewProviderPromise = papi.webViewProviders.register(
     htmlWebViewType,
     htmlWebViewProvider
   );
 
-  const reactWebViewProviderPromise = papi.webViews.registerWebViewProvider(
+  const reactWebViewProviderPromise = papi.webViewProviders.register(
     reactWebViewType,
     reactWebViewProvider
   );
