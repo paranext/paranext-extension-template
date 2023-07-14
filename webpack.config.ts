@@ -142,6 +142,17 @@ const configMain: webpack.Configuration = merge(configBase, {
     // Empty the dist folder before building
     clean: true,
   },
+  module: {
+    rules: [
+      {
+        resource: (...args) => {
+          console.log(JSON.stringify(args));
+          return false;
+        },
+        type: "asset/source",
+      },
+    ],
+  },
   resolve: {
     plugins: [
       // Get web view files from the temp dir where they are built
