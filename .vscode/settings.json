@@ -2,5 +2,10 @@
   "editor.rulers": [100],
   "editor.wordWrapColumn": 100,
 
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "cSpell.words": [
+    "endregion",
+    "papi",
+    "paranext"
+  ]
 }
