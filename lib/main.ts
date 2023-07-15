@@ -4,18 +4,28 @@ import extensionTemplateReact from "./extension-template.web-view.tsx?inline";
 import extensionTemplateReact2 from "./extension-template-2.web-view.tsx?inline";
 import extensionTemplateReactStyles from "./extension-template.web-view.scss?inline";
 import extensionTemplateHtml from "./extension-template-html.web-view.html?inline";
-import type { SavedWebViewDefinition,
+import type {
+  SavedWebViewDefinition,
   WebViewContentType,
-  WebViewDefinition } from "shared/data/web-view.model";
-import { ExtensionVerseDataTypes, ExtensionVerseSetData } from "paranext-extension-template";
+  WebViewDefinition,
+} from "shared/data/web-view.model";
+import {
+  DoStuffEvent,
+  ExtensionVerseDataTypes,
+  ExtensionVerseSetData,
+} from "paranext-extension-template";
 import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
 import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
 import { ExecutionToken } from "node/models/execution-token.model";
 import { UnsubscriberAsync } from "shared/utils/papi-util";
 import type { IWebViewProvider } from "shared/models/web-view-provider.model";
 import type { UsfmDataProvider } from "usfm-data-provider";
+import { VerseRef } from "@sillsdev/scripture";
 
-const { logger, dataProvider: { DataProviderEngine } } = papi;
+const {
+  logger,
+  dataProvider: { DataProviderEngine },
+} = papi;
 
 console.log(process.env.NODE_ENV);
 
@@ -70,9 +80,9 @@ class QuickVerseDataProviderEngine
   verses: { [scrRef: string]: { text: string; isChanged?: boolean } } = {};
 
   /** Latest updated verse reference */
-  latestVerseRef = 'JHN 11:35';
+  latestVerseRef = "JHN 11:35";
 
-  usfmDataProviderPromise = papi.dataProvider.get<UsfmDataProvider>('usfm');
+  usfmDataProviderPromise = papi.dataProvider.get<UsfmDataProvider>("usfm");
 
   /** Number of times any verse has been modified by a user this session */
   heresyCount = 0;
@@ -83,7 +93,7 @@ class QuickVerseDataProviderEngine
     // call it.
     super();
 
-    this.heresyWarning = this.heresyWarning ?? 'heresyCount =';
+    this.heresyWarning = this.heresyWarning ?? "heresyCount =";
   }
 
   /**
@@ -102,13 +112,13 @@ class QuickVerseDataProviderEngine
   @papi.dataProvider.decorators.ignore
   async setInternal(
     selector: string,
-    data: ExtensionVerseSetData,
+    data: ExtensionVerseSetData
   ): Promise<DataProviderUpdateInstructions<ExtensionVerseDataTypes>> {
     // Just get notifications of updates with the 'notify' selector. Nothing to change
-    if (selector === 'notify') return false;
+    if (selector === "notify") return false;
 
     // You can't change scripture from just a string. You have to tell us you're a heretic
-    if (typeof data === 'string' || data instanceof String) return false;
+    if (typeof data === "string" || data instanceof String) return false;
 
     // Only heretics change Scripture, so you have to tell us you're a heretic
     if (!data.isHeresy) return false;
@@ -121,10 +131,10 @@ class QuickVerseDataProviderEngine
       text: data.text,
       isChanged: true,
     };
-    if (selector !== 'latest') this.latestVerseRef = this.#getSelector(selector);
+    if (selector !== "latest") this.latestVerseRef = this.#getSelector(selector);
     this.heresyCount += 1;
     // Update all data types, so Verse and Heresy in this case
-    return '*';
+    return "*";
   }
 
   /**
@@ -172,7 +182,7 @@ class QuickVerseDataProviderEngine
    */
   getVerse = async (verseRef: string) => {
     // Just get notifications of updates with the 'notify' selector
-    if (verseRef === 'notify') return undefined;
+    if (verseRef === "notify") return undefined;
     const selector = this.#getSelector(verseRef);
 
     // Look up the cached data first
@@ -183,8 +193,8 @@ class QuickVerseDataProviderEngine
       // Fetch the verse, cache it, and return it
       try {
         const usfmDataProvider = await this.usfmDataProviderPromise;
-        if (!usfmDataProvider) throw Error('Unable to get USFM data provider');
-        const verseData = usfmDataProvider.getVerse({ verseString: selector });
+        if (!usfmDataProvider) throw Error("Unable to get USFM data provider");
+        const verseData = usfmDataProvider.getVerse(new VerseRef(selector));
         responseVerse = { text: (await verseData) ?? `${selector} not found` };
         // Cache the verse text, track the latest cached verse, and send an update
         this.verses[selector] = responseVerse;
@@ -199,7 +209,7 @@ class QuickVerseDataProviderEngine
 
     if (responseVerse.isChanged) {
       // Remove any previous heresy warning from the beginning of the text so they don't stack
-      responseVerse.text = responseVerse.text.replace(/^\[.* \d*\] /, '');
+      responseVerse.text = responseVerse.text.replace(/^\[.* \d*\] /, "");
       return `[${this.heresyWarning} ${this.heresyCount}] ${responseVerse.text}`;
     }
     return responseVerse.text;
@@ -264,7 +274,7 @@ class QuickVerseDataProviderEngine
    */
   #getSelector(selector: string) {
     const selectorL = selector.toLowerCase().trim();
-    return selectorL === 'latest' ? this.latestVerseRef : selectorL;
+    return selectorL === "latest" ? this.latestVerseRef : selectorL;
   }
 }
 
@@ -274,9 +284,7 @@ const htmlWebViewType = "paranextExtensionTemplate.html";
  * Simple web view provider that provides sample html web views when papi requests them
  */
 const htmlWebViewProvider: IWebViewProvider = {
-  async getWebView(
-    savedWebView: SavedWebViewDefinition
-  ): Promise<WebViewDefinition | undefined> {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
     if (savedWebView.webViewType !== htmlWebViewType)
       throw new Error(
         `${htmlWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`
@@ -296,9 +304,7 @@ const reactWebViewType = "paranextExtensionTemplate.react";
  * Simple web view provider that provides React web views when papi requests them
  */
 const reactWebViewProvider: IWebViewProvider = {
-  async getWebView(
-    savedWebView: SavedWebViewDefinition
-  ): Promise<WebViewDefinition | undefined> {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
     if (savedWebView.webViewType !== reactWebViewType)
       throw new Error(
         `${reactWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`
@@ -352,11 +358,10 @@ export async function activate(context: ExecutionActivationContext) {
   }
   engine.heresyCount = storedHeresyCount;
 
-  const quickVerseDataProviderPromise =
-    papi.dataProvider.registerEngine<ExtensionVerseDataTypes>(
-      "paranextExtensionTemplate.quickVerse",
-      engine
-    );
+  const quickVerseDataProviderPromise = papi.dataProvider.registerEngine<ExtensionVerseDataTypes>(
+    "paranextExtensionTemplate.quickVerse",
+    engine
+  );
 
   const htmlWebViewProviderPromise = papi.webViewProviders.register(
     htmlWebViewType,
@@ -373,13 +378,24 @@ export async function activate(context: ExecutionActivationContext) {
     reactWebViewProvider2
   );
 
+  let doStuffCount = 0;
+  // Emitter to tell subscribers how many times we have done stuff
+  const onDoStuffEmitter = papi.network.createNetworkEventEmitter<DoStuffEvent>(
+    "extensionTemplate.doStuff"
+  );
+
   const unsubPromises = [
-    papi.commands.registerCommand(
-      "extensionTemplate.doStuff",
-      (message: string) => {
-        return `The template did stuff! ${message}`;
-      }
-    ),
+    papi.commands.registerCommand("extensionTemplate.doStuff", (message: string) => {
+      doStuffCount += 1;
+      // Inform subscribers of the update
+      onDoStuffEmitter.emit({ count: doStuffCount });
+
+      // Respond to the sender of the command with the news
+      return {
+        response: `The template did stuff ${doStuffCount} times! ${message}`,
+        occurrence: doStuffCount,
+      };
+    }),
   ];
 
   // Create webviews or get an existing webview if one already exists for this type
@@ -397,15 +413,18 @@ export async function activate(context: ExecutionActivationContext) {
   const reactWebViewProviderResolved = await reactWebViewProviderPromise;
   const reactWebViewProvider2Resolved = await reactWebViewProvider2Promise;
 
-  const combinedUnsubscriber: UnsubscriberAsync =
-    papi.util.aggregateUnsubscriberAsyncs(
-      (await Promise.all(unsubPromises)).concat([
-        quickVerseDataProvider.dispose,
-        htmlWebViewProviderResolved.dispose,
-        reactWebViewProviderResolved.dispose,
-        reactWebViewProvider2Resolved.dispose,
-      ])
-    );
+  const combinedUnsubscriber: UnsubscriberAsync = papi.util.aggregateUnsubscriberAsyncs(
+    (await Promise.all(unsubPromises)).concat([
+      quickVerseDataProvider.dispose,
+      htmlWebViewProviderResolved.dispose,
+      reactWebViewProviderResolved.dispose,
+      reactWebViewProvider2Resolved.dispose,
+      () => {
+        onDoStuffEmitter.dispose();
+        return Promise.resolve(true);
+      },
+    ])
+  );
   logger.info("Extension template is finished activating!");
   return combinedUnsubscriber;
 }

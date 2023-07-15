@@ -14,12 +14,18 @@ declare module 'paranext-extension-template' {
     >;
   };
 
+  /** Network event that informs subscribers when the command `extensionTemplate.doStuff` is run */
+  export type DoStuffEvent = {
+    /** How many times the extension template has run the command `extensionTemplate.doStuff` */
+    count: number;
+  }
+
   export type ExtensionVerseDataProvider = IDataProvider<ExtensionVerseDataTypes>;
 }
 
 declare module "papi-commands" {
   export interface CommandHandlers {
-    "extensionTemplate.doStuff": (message: string) => string;
+    "extensionTemplate.doStuff": (message: string) => { response: string, occurrence: number };
   }
 }
 

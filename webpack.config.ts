@@ -33,6 +33,7 @@ const configBase: webpack.Configuration = {
     "react-dom/client",
     "papi-frontend",
     "papi-backend",
+    "@sillsdev/scripture",
   ],
   module: {
     rules: [
