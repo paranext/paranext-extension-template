@@ -12,11 +12,11 @@
     "build": "webpack",
     "watch": "npm run build -- --watch",
     "build:production": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=false webpack",
-    "zip": "zip-build --buildDir dist",
+    "zip": "zip-build --template '%NAME%_%VERSION%.%EXT%' --override",
     "package": "npm run build:production && npm run zip",
     "package:debug": "npm run build && npm run zip",
     "start:core": "cd ../paranext-core && npm run start",
-    "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:watch\" \"npm:start:core\"",
+    "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/build\" concurrently \"npm:watch\" \"npm:start:core\"",
     "lint": "tsc"
   },
   "dependencies": {

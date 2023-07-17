@@ -16,7 +16,7 @@ const configMain: webpack.Configuration = merge(configBase, {
   dependencies: ["webView"],
   output: {
     // extension output directory
-    path: path.resolve(rootDir, "dist"),
+    path: path.resolve(rootDir, "build"),
     filename: "paranext-extension-template.js",
     // Exporting the library https://webpack.js.org/guides/author-libraries/#expose-the-library
     globalObject: "globalThis",
@@ -24,7 +24,7 @@ const configMain: webpack.Configuration = merge(configBase, {
       name: "paranextExtensionTemplate",
       type: "umd",
     },
-    // Empty the dist folder before building
+    // Empty the output folder before building
     clean: true,
   },
   resolve: {
