@@ -11,7 +11,10 @@
     "build:main": "webpack --config ./webpack/webpack.config.main.ts",
     "build": "webpack",
     "watch": "npm run build -- --watch",
-    "build:production": "cross-env NODE_ENV=production webpack",
+    "build:production": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=false webpack",
+    "zip": "zip-build --buildDir dist",
+    "package": "npm run build:production && npm run zip",
+    "package:debug": "npm run build && npm run zip",
     "start:core": "cd ../paranext-core && npm run start",
     "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:watch\" \"npm:start:core\"",
     "lint": "tsc"
@@ -43,6 +46,7 @@
     "typescript": "^5.1.3",
     "webpack": "^5.88.1",
     "webpack-cli": "^5.1.4",
-    "webpack-merge": "^5.9.0"
+    "webpack-merge": "^5.9.0",
+    "zip-build": "^1.8.0"
   }
 }
