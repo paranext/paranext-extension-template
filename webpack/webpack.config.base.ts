@@ -20,7 +20,8 @@ const configBase: webpack.Configuration = {
   watchOptions: {
     ignored: ["**/node_modules"],
   },
-  // Use require for externals https://webpack.js.org/configuration/externals/#externalstypecommonjs
+  // Use require for externals as it is the only type of importing that Paranext supports
+  // https://webpack.js.org/configuration/externals/#externalstypecommonjs
   externalsType: "commonjs",
   // Modules that Paranext supplies to extensions https://webpack.js.org/configuration/externals/
   // All other dependencies must be bundled into the extension
@@ -34,12 +35,14 @@ const configBase: webpack.Configuration = {
     "@sillsdev/scripture",
   ],
   module: {
+    // Please keep these JSDocs up-to-date with their counterparts in `webpack-env.d.ts`
     rules: [
       /**
        * Import fully loaded and transformed files as strings with "./file?inline"
        *
        * WARNING: These files are NOT bundled. The rules are applied, but webpack does not bundle
-       * dependencies into these files before providing them, unfortunately.
+       * dependencies into these files before providing them, unfortunately. However, React WebView
+       * files are an exception as they are fully bundled.
        */
       // This must be the first rule in order to be applied after all other transformations
       // https://webpack.js.org/guides/asset-modules/#replacing-inline-loader-syntax

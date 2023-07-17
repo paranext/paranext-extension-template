@@ -1,4 +1,8 @@
-/** Modules provided by webpack.config.ts */
+/**
+ * Modules provided by webpack.config.ts
+ *
+ * Please keep these JSDocs up-to-date with their counterparts in `webpack.config.base.ts`
+ */
 
 // #region code and things
 
@@ -6,7 +10,8 @@
  * Import fully loaded and transformed files as strings with "./file?inline"
  *
  * WARNING: These files are NOT bundled. The rules are applied, but webpack does not bundle
- * dependencies into these files before providing them, unfortunately.
+ * dependencies into these files before providing them, unfortunately. However, React WebView
+ * files are an exception as they are fully bundled.
  */
 declare module "*?inline" {
   const content: string;

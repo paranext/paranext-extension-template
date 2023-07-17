@@ -1,11 +1,6 @@
 {
   "compilerOptions": {
-    // For some reason, ESNext produces the following error:
-    //   ReferenceError: Must call super constructor in derived class before accessing 'this' or
-    //   returning from derived constructor
-    // Seems it has something to do with some syntax issue in the minification process - putting a
-    // semicolon after `super()` in the bundle fixes the problem.
-    "target": "ES2020",
+    "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
@@ -33,13 +28,13 @@
       "../paranext-core/lib",
       // Include other extensions' type declarations
       "../paranext-core/extensions/lib",
-      // Include this extension's type declarations. It's in this weird location so there aren't any
-      // unexpected files there for typeRoots to get upset about
+      // Include this extension's type declarations. It's in this location so there aren't any
+      // unexpected files there for typeRoots to include
       "lib/types"
     ],
     // Papi exposes decorators for use in classes
     "experimentalDecorators": true,
-    // We want sourcemaps to inline with webpack
+    // We want sourcemaps so we can bundle them with webpack
     "sourceMap": true,
     // We need a baseurl for webpack's tsconfig path aliases plugin
     "baseUrl": "./"
@@ -48,7 +43,7 @@
   "ts-node": {
     // This allows us to use path aliases in ts-node
     "require": ["tsconfig-paths/register"],
-    // This allows us to run webpack even if there are type errors in the webpack configs
+    // This allows us to run webpack even if there are type errors in the webpack configs. Optional
     "transpileOnly": true
   }
 }
