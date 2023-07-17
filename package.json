@@ -2,6 +2,10 @@
   "name": "paranext-extension-template",
   "private": true,
   "version": "0.0.1",
+  "main": "paranext-extension-template.js",
+  "types": "paranext-extension-template.d.ts",
+  "author": "Paranext",
+  "license": "MIT",
   "scripts": {
     "build": "cross-env TS_NODE_TRANSPILE_ONLY=true webpack",
     "watch": "npm run build -- --watch",

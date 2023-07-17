@@ -61,7 +61,6 @@ export function getWebViewTempPath(
  * @returns promise that resolves to the webView entry config
  */
 export async function getWebViewEntries(): Promise<webpack.EntryObject> {
-  console.log("getting webview entries!");
   const tsxWebViews = await getWebViewTsxPaths();
   return Object.fromEntries(
     tsxWebViews.map((webViewPath) => [
