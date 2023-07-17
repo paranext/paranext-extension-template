@@ -47,6 +47,8 @@
   "include": ["lib"],
   "ts-node": {
     // This allows us to use path aliases in ts-node
-    "require": ["tsconfig-paths/register"]
+    "require": ["tsconfig-paths/register"],
+    // This allows us to run webpack even if there are type errors in the webpack configs
+    "transpileOnly": true
   }
 }

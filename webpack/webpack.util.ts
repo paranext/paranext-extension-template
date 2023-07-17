@@ -62,7 +62,7 @@ export function getWebViewTempPath(
  */
 export async function getWebViewEntries(): Promise<webpack.EntryObject> {
   const tsxWebViews = await getWebViewTsxPaths();
-  return Object.fromEntries(
+  const webViewEntries = Object.fromEntries(
     tsxWebViews.map((webViewPath) => [
       webViewPath,
       {
@@ -71,4 +71,5 @@ export async function getWebViewEntries(): Promise<webpack.EntryObject> {
       },
     ])
   );
+  return webViewEntries;
 }

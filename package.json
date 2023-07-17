@@ -7,9 +7,11 @@
   "author": "Paranext",
   "license": "MIT",
   "scripts": {
-    "build": "cross-env TS_NODE_TRANSPILE_ONLY=true webpack",
+    "build:web-view": "webpack --config ./webpack/webpack.config.web-view.ts",
+    "build:main": "webpack --config ./webpack/webpack.config.main.ts",
+    "build": "webpack",
     "watch": "npm run build -- --watch",
-    "build:production": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack",
+    "build:production": "cross-env NODE_ENV=production webpack",
     "start:core": "cd ../paranext-core && npm run start",
     "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:watch\" \"npm:start:core\"",
     "lint": "tsc"

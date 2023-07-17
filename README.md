@@ -51,21 +51,21 @@ To build the extension once:
 
 ## Webpack Build Explanation
 
-This extension template is built by webpack in two steps: a WebView transpilation step and a packaging step:
+This extension template is built by webpack (`webpack.config.ts`) in two steps: a WebView bundling step and a main bundling step:
 
-## Build 1: TypeScript WebView transpilation
+## Build 1: TypeScript WebView Bundling
 
-Webpack prepares TypeScript WebViews for use and outputs them into `temp-webpack` folders adjacent to the WebView files:
+Webpack (`./webpack/webpack.config.web-view.ts`) prepares TypeScript WebViews for use and outputs them into `temp-webpack` folders adjacent to the WebView files:
 - Formats WebViews to match how they should look to work in Paranext
 - Transpiles React/TypeScript WebViews into JavaScript
-- Packages dependencies into the WebViews
+- Bundles dependencies into the WebViews
 - Embeds Sourcemaps into the WebViews inline
 
-## Built 2: Packaging
+## Build 2: Main and Final Bundling
 
-Webpack packages the extension together into the `dist` folder:
+Webpack (`./webpack/webpack.config.main.ts`) prepares the main extension file and bundles the extension together into the `dist` folder:
 - Transpiles the main TypeScript file and its imported modules into JavaScript
-- Injects the WebViews into the main file
-- Packages dependencies into the main file
+- Injects the bundled WebViews into the main file
+- Bundles dependencies into the main file
 - Embeds Sourcemaps into the file inline
 - Packages everything up into an extension folder `dist`
