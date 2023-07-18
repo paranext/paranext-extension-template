@@ -43,7 +43,10 @@
     // We want sourcemaps so we can bundle them with webpack
     "sourceMap": true,
     // We need a baseurl for webpack's tsconfig path aliases plugin
-    "baseUrl": "./"
+    "baseUrl": "./",
+    // rspack parallelizes builds and only supports this being true
+    // https://www.rspack.dev/guide/language-support.html#isolatedmodules
+    "isolatedModules": true
   },
   "include": ["lib"],
   "ts-node": {

@@ -1,6 +1,5 @@
 import path from "path";
-import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
-import webpack from "webpack";
+import { Configuration } from "@rspack/cli";
 
 /** The base directory from which webpack should operate (should be the root repo folder) */
 export const rootDir = path.resolve(__dirname, "..");
@@ -11,7 +10,7 @@ const isDev = process.env.NODE_ENV !== "production";
 // other than those listed in configBase.externals. Each webView must contain all its dependency
 // code, and main must contain all its dependency code.
 /** webpack configuration shared by webView building and main building */
-const configBase: webpack.Configuration = {
+const configBase: Configuration = {
   // The operating directory for webpack instead of current working directory
   context: rootDir,
   mode: isDev ? "development" : "production",
@@ -50,18 +49,6 @@ const configBase: webpack.Configuration = {
         resourceQuery: /inline/,
         type: "asset/source",
       },
-      // Load TypeScript https://webpack.js.org/guides/typescript/#basic-setup
-      {
-        test: /\.tsx?$/,
-        use: {
-          loader: "ts-loader",
-          options: {
-            // Do not fail to build on type errors
-            transpileOnly: true,
-          },
-        },
-        exclude: /node_modules/,
-      },
       /**
        * Import scss, sass, and css files as strings
        */
@@ -71,8 +58,8 @@ const configBase: webpack.Configuration = {
         use: [
           // We are not using style-loader since we are passing styles to papi, not inserting them
           // into dom
-          // Translates CSS into CommonJS
-          "css-loader",
+          // Translates CSS into CommonJS. css-loader doesn't work with rspack
+          // "css-loader",
           // Compiles Sass to CSS
           "sass-loader",
         ],
@@ -114,10 +101,9 @@ const configBase: webpack.Configuration = {
     // If no file extension is provided on file path imports, use these extensions left-to-right
     // https://webpack.js.org/guides/typescript/#basic-setup
     extensions: [".tsx", ".ts", ".js"],
-    plugins: [
-      // use tsconfig.json paths https://www.npmjs.com/package/tsconfig-paths-webpack-plugin
-      new TsconfigPathsPlugin(),
-    ],
+    // use tsconfig.json paths https://www.npmjs.com/package/tsconfig-paths-webpack-plugin
+    // https://www.rspack.dev/config/resolve.html#resolvetsconfigpath
+    tsConfigPath: path.resolve(rootDir, "tsconfig.json"),
   },
 };
 

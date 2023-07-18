@@ -1,6 +1,6 @@
-import webpack from "webpack";
 import path from "path";
 import { glob } from "glob";
+import { Configuration } from "@rspack/cli";
 
 /**
  * String of what a web view needs to have in its name before the file extension to be considered a
@@ -60,7 +60,7 @@ export function getWebViewTempPath(
  * folder in the same directory
  * @returns promise that resolves to the webView entry config
  */
-export async function getWebViewEntries(): Promise<webpack.EntryObject> {
+export async function getWebViewEntries(): Promise<Configuration['entry']> {
   const tsxWebViews = await getWebViewTsxPaths();
   const webViewEntries = Object.fromEntries(
     tsxWebViews.map((webViewPath) => [

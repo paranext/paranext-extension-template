@@ -66,7 +66,7 @@ This template has special features and specific configuration to make building a
 Paranext WebViews must be treated differently than other code, so this template makes doing that simpler:
 
 - WebView code must be bundled and can only import specific packages provided by Paranext (see `externals` in `webpack.config.base.ts`), so this template bundles React WebViews before bundling the main extension file to support this requirement. The template discovers and bundles files that end with `.web-view.tsx` in this way.
-  - Note: while watching for changes, if you add a new `.web-view.tsx` file, you must either restart webpack or make a nominal change and save in an existing `.web-view.tsx` file for webpack to discover and bundle this new file.
+  - Note: while watching for changes, if you add a new `.web-view.tsx` file, you must restart rspack to discover and bundle this new file.
 - WebView code and styles must be provided to the `papi` as strings, so you can import WebView files with [`?inline`](#special-imports) after the file path to import the file as a string.
 
 ### Special imports

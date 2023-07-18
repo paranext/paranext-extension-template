@@ -1,12 +1,10 @@
-import webpack from "webpack";
 import path from "path";
 import merge from "webpack-merge";
-import CopyPlugin from "copy-webpack-plugin";
 import configBase, { rootDir } from "./webpack.config.base";
-import WebViewResolveWebpackPlugin from "./web-view-resolve-webpack-plugin";
+import { Configuration } from "@rspack/cli";
 
 /** webpack configuration for building main */
-const configMain: webpack.Configuration = merge(configBase, {
+const configMain: Configuration = merge(configBase, {
   context: rootDir,
   // configuration name
   name: "main",
@@ -27,15 +25,8 @@ const configMain: webpack.Configuration = merge(configBase, {
     // Empty the output folder before building
     clean: true,
   },
-  resolve: {
-    plugins: [
-      // Get web view files from the temp dir where they are built
-      new WebViewResolveWebpackPlugin(),
-    ],
-  },
-  plugins: [
-    // Copy static files to the output folder https://webpack.js.org/plugins/copy-webpack-plugin/
-    new CopyPlugin({
+  builtins: {
+    copy: {
       patterns: [
         // We want all files from the public folder copied into the output folder
         { from: "public", to: "./" },
@@ -44,8 +35,8 @@ const configMain: webpack.Configuration = merge(configBase, {
         // We need to distribute the package.json for Paranext to read the extension properly
         { from: "package.json", to: "./" },
       ],
-    }),
-  ],
+    },
+  },
 });
 
 export default configMain;
