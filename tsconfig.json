@@ -30,7 +30,7 @@
       "../paranext-core/extensions/lib",
       // Include this extension's type declarations. It's in this location so there aren't any
       // unexpected files there for typeRoots to include
-      "lib/types"
+      "src/types"
     ],
     // Papi exposes decorators for use in classes
     "experimentalDecorators": true,
@@ -39,7 +39,7 @@
     // We need a baseurl for webpack's tsconfig path aliases plugin
     "baseUrl": "./"
   },
-  "include": ["lib"],
+  "include": ["src"],
   "ts-node": {
     // This allows us to use path aliases in ts-node
     "require": ["tsconfig-paths/register"],

@@ -6,17 +6,17 @@ Basic extension template for Paranext
 This is a webpack project template pre-configured to build Paranext extensions.
 
 - `package.json` contains information about this extension project. It is copied into the build folder
-- `lib` contains the source code for the extension
-  - `lib/main.ts` is the main entry file for the extension
-  - `lib/types/paranext-extension-template.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`. It is copied into the build folder
+- `src` contains the source code for the extension
+  - `src/main.ts` is the main entry file for the extension
+  - `src/types/paranext-extension-template.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`. It is copied into the build folder
   - `*.web-view.tsx` files will be treated as React WebViews
   - `*.web-view.ejs` files will be treated as HTML WebViews
 - `public` contains static files that are copied into the build folder
   - `public/manifest.json` is the manifest file that defines the extension and important properties for Paranext
   - `public/package.json` defines the npm package for this extension and is required for Paranext to use it appropriately
   - `public/assets` contains asset files the extension and its WebViews can retrieve using the `papi-extension:` protocol
-- `build` is a generated folder containing your built extension files
-- `dist` is a generated folder containing a zip of your built extension files
+- `dist` is a generated folder containing your built extension files
+- `release` is a generated folder containing a zip of your built extension files
 
 ## To install
 
@@ -39,11 +39,11 @@ To run Paranext with your extension:
 
 `npm start`
 
-Note: The built extension will be in the `build` folder. In order for Paranext to run your extension, you must provide the directory to your built extension to Paranext via a command-line argument. This command-line argument is already provided in this `package.json`'s `start` script. If you want to start Paranext and use your extension any other way, you must provide this command-line argument or put the `build` folder into Paranext's `extensions` folder.
+Note: The built extension will be in the `dist` folder. In order for Paranext to run your extension, you must provide the directory to your built extension to Paranext via a command-line argument. This command-line argument is already provided in this `package.json`'s `start` script. If you want to start Paranext and use your extension any other way, you must provide this command-line argument or put the `dist` folder into Paranext's `extensions` folder.
 
 ### Building your extension independently
 
-To watch extension files (in `lib`) for changes:
+To watch extension files (in `src`) for changes:
 
 `npm run watch`
 
@@ -78,7 +78,7 @@ Paranext WebViews must be treated differently than other code, so this template 
 ### Misc features
 
 - Paranext extension code must be bundled all together in one file, so webpack bundles all the code together into one main extension file.
-- Paranext extensions can interact with other extensions, but they cannot import and export like in a normal Node environment. Instead, they interact through the `papi`. As such, the `lib/types` folder contains this extension's declarations file that tells other extensions how to interact with it through the `papi`.
+- Paranext extensions can interact with other extensions, but they cannot import and export like in a normal Node environment. Instead, they interact through the `papi`. As such, the `src/types` folder contains this extension's declarations file that tells other extensions how to interact with it through the `papi`.
 
 ### Two-step webpack build
 
@@ -94,9 +94,9 @@ Webpack (`./webpack/webpack.config.web-view.ts`) prepares TypeScript WebViews fo
 
 #### Build 2: Main and final bundling
 
-Webpack (`./webpack/webpack.config.main.ts`) prepares the main extension file and bundles the extension together into the `build` folder:
+Webpack (`./webpack/webpack.config.main.ts`) prepares the main extension file and bundles the extension together into the `dist` folder:
 - Transpiles the main TypeScript file and its imported modules into JavaScript
 - Injects the bundled WebViews into the main file
 - Bundles dependencies into the main file
 - Embeds Sourcemaps into the file inline
-- Packages everything up into an extension folder `build`
+- Packages everything up into an extension folder `dist`
