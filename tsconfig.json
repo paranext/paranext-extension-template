@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    // For some reason, ESNext produces the following error when we build for production:
+    //   ReferenceError: Must call super constructor in derived class before accessing 'this' or
+    //   returning from derived constructor
+    // Seems it has something to do with some syntax issue in the minification process - putting a
+    // semicolon after `super()` in the bundle fixes the problem.
+    // Others are having similar issues https://github.com/evanw/esbuild/issues/1497
+    "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
