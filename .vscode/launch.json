@@ -10,7 +10,7 @@
         "request": "launch",
         "runtimeExecutable": "npm",
         "skipFiles": ["<node_internals>/**"],
-        "runtimeArgs": ["run", "start:vite"]
+        "runtimeArgs": ["run", "watch"]
       },
       {
         "name": "Build Extension",
@@ -18,7 +18,7 @@
         "request": "launch",
         "runtimeExecutable": "npm",
         "skipFiles": ["<node_internals>/**"],
-        "runtimeArgs": ["run", "build:vite"]
+        "runtimeArgs": ["run", "build"]
       },
       {
         "name": "Debug Paranext Core with Extension",

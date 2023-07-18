@@ -42,7 +42,7 @@ globalThis.webViewComponent = function () {
   return (
     <>
       <div className="title">
-        Extension Template <span className="framework">React</span>
+        Extension Template <span className="framework">React 2</span>
       </div>
       <div>{latestExtensionVerseText}</div>
       <div>{latestQuickVerseText}</div>
