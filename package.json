@@ -15,7 +15,7 @@
     "watch:production": "npm run build:production -- --watch",
     "zip": "zip-build dist release --template '%NAME%_%VERSION%.%EXT%' --override",
     "package": "npm run build:production && npm run zip",
-    "package:debug": "npm run build && npm run zip",
+    "package:debug": "cross-env DEBUG_PROD=true npm run package",
     "start:core": "cd ../paranext-core && npm run start",
     "start": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:watch\" \"npm:start:core\"",
     "start:production": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:watch:production\" \"npm:start:core\"",

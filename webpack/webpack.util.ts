@@ -70,7 +70,7 @@ export async function getWebViewEntries(): Promise<webpack.EntryObject> {
       {
         import: webViewPath,
         filename: getWebViewTempPath(webViewPath),
-      },
+      } as webpack.EntryObject[string],
     ])
   );
   return webViewEntries;
