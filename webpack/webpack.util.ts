@@ -2,6 +2,8 @@ import webpack from "webpack";
 import path from "path";
 import { glob } from "glob";
 
+// #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/webpack.util.ts
+
 /**
  * String of what a web view needs to have in its name before the file extension to be considered a
  * web-view
@@ -49,7 +51,7 @@ export function getWebViewTempPath(
   const webViewName = webViewInfo.ext === webViewTag ? webViewInfo.base : webViewInfo.name;
   // Put transpiled WebViews in a temp folder in the same directory as the original WebView
   // Make sure to preserve the ./ to indicate it is a relative path
-  return `${webViewInfo.dir === "." ? "./" : ""}${join(
+  return `${webViewPath.startsWith("./") ? "./" : ""}${join(
     webViewInfo.dir,
     join(webViewTempDir, `${webViewName}.js`)
   )}`;
@@ -73,3 +75,5 @@ export async function getWebViewEntries(): Promise<webpack.EntryObject> {
   );
   return webViewEntries;
 }
+
+// #endregion

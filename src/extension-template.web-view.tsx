@@ -15,7 +15,7 @@ const {
   logger,
 } = papi;
 
-globalThis.webViewComponent = function () {
+globalThis.webViewComponent = function ExtensionTemplate() {
   const [clicks, setClicks] = useState(0);
 
   useEvent<DoStuffEvent>(

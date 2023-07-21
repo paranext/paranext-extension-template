@@ -13,6 +13,22 @@
         "runtimeArgs": ["run", "watch"]
       },
       {
+        "name": "Build WebViews",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeArgs": ["run", "build:web-view"]
+      },
+      {
+        "name": "Build Main",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeArgs": ["run", "build:main"]
+      },
+      {
         "name": "Build Extension",
         "type": "node",
         "request": "launch",

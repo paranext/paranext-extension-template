@@ -1,8 +1,7 @@
-import { VerseRef } from '@sillsdev/scripture';
 import papi from 'papi-backend';
 import IDataProviderEngine from 'shared/models/data-provider-engine.model';
-import extensionTemplateReact from './extension-template.web-view.tsx?inline';
-import extensionTemplateReact2 from './extension-template-2.web-view.tsx?inline';
+import extensionTemplateReact from './extension-template.web-view?inline';
+import extensionTemplateReact2 from './extension-template-2.web-view?inline';
 import extensionTemplateReactStyles from './extension-template.web-view.scss?inline';
 import extensionTemplateHtml from './extension-template-html.web-view.html?inline';
 import type {

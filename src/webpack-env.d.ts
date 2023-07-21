@@ -1,5 +1,7 @@
+// #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/src/webpack-env.d.ts
+
 /**
- * Modules provided by webpack.config.ts
+ * Modules provided by our webpack configuration
  *
  * Please keep these JSDocs up-to-date with their counterparts in `webpack.config.base.ts`
  */
@@ -167,5 +169,7 @@ declare module "*.otf" {
   const content: string;
   export default content;
 }
+
+// #endregion
 
 // #endregion

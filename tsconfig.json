@@ -27,7 +27,7 @@
       // Include papi-dts type declarations (for papi.d.ts)
       "../paranext-core/lib",
       // Include other extensions' type declarations
-      "../paranext-core/extensions/lib",
+      "../paranext-core/extensions/src",
       // Include this extension's type declarations. It's in this location so there aren't any
       // unexpected files there for typeRoots to include
       "src/types"

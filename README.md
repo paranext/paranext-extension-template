@@ -5,12 +5,12 @@ Basic extension template for Paranext
 
 This is a webpack project template pre-configured to build Paranext extensions.
 
-- `package.json` contains information about this extension project. It is copied into the build folder
+- `package.json` contains information about this extension npm package. It is required for Paranext to use the extension properly. It is copied into the build folder
 - `src` contains the source code for the extension
   - `src/main.ts` is the main entry file for the extension
   - `src/types/paranext-extension-template.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`. It is copied into the build folder
   - `*.web-view.tsx` files will be treated as React WebViews
-  - `*.web-view.ejs` files will be treated as HTML WebViews
+  - `*.web-view.html` files are a conventional way to provide HTML WebViews (no special functionality)
 - `public` contains static files that are copied into the build folder
   - `public/manifest.json` is the manifest file that defines the extension and important properties for Paranext
   - `public/package.json` defines the npm package for this extension and is required for Paranext to use it appropriately

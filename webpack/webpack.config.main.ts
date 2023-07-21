@@ -7,13 +7,25 @@ import WebViewResolveWebpackPlugin from "./web-view-resolve-webpack-plugin";
 
 /** webpack configuration for building main */
 const configMain: webpack.Configuration = merge(configBase, {
-  context: rootDir,
+  // #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/webpack.config.main.ts
+
+  // Build for node since Paranext loads this in node https://webpack.js.org/concepts/targets/
+  target: "node",
   // configuration name
   name: "main",
-  // extension main source file to build
-  entry: "./src/main.ts",
   // wait until webView bundling finishes - webpack.config.web-view.ts
   dependencies: ["webView"],
+  resolve: {
+    plugins: [
+      // Get web view files from the temp dir where they are built
+      new WebViewResolveWebpackPlugin(),
+    ],
+  },
+
+  // #endregion
+
+  // extension main source file to build
+  entry: "./src/main.ts",
   output: {
     // extension output directory
     path: path.resolve(rootDir, "dist"),
@@ -26,12 +38,6 @@ const configMain: webpack.Configuration = merge(configBase, {
     },
     // Empty the output folder before building
     clean: true,
-  },
-  resolve: {
-    plugins: [
-      // Get web view files from the temp dir where they are built
-      new WebViewResolveWebpackPlugin(),
-    ],
   },
   plugins: [
     // Copy static files to the output folder https://webpack.js.org/plugins/copy-webpack-plugin/

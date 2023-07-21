@@ -1,3 +1,5 @@
+// #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/web-view-resolve-webpack-plugin.ts
+
 import { Resolver } from "webpack";
 import { getWebViewTempPath, webViewTempDir, webViewTsxRegex } from "./webpack.util";
 
@@ -37,7 +39,7 @@ export default class WebViewResolveWebpackPlugin {
       // Add our plugin to the list of resolvers to run
       .tapAsync(
         // Internally note that this is our plugin
-        "TempWebpackResolvePlugin",
+        "WebViewResolveWebpackPlugin",
         /**
          * The logic to add to webpack resolving so it will look in the temp dir for built code.
          *
@@ -103,7 +105,10 @@ export default class WebViewResolveWebpackPlugin {
             resolveContext,
             callback
           );
+          return undefined;
         }
       );
   }
 }
+
+// #endregion
