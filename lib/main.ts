@@ -1,26 +1,32 @@
-import papi from "papi-backend";
-import IDataProviderEngine from "shared/models/data-provider-engine.model";
+import { VerseRef } from '@sillsdev/scripture';
+import papi from 'papi-backend';
+import IDataProviderEngine from 'shared/models/data-provider-engine.model';
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
-import extensionTemplateReact from "./extension-template.web-view";
-import extensionTemplateReactStyles from "./extension-template.web-view.scss?inline";
+import extensionTemplateReact from './extension-template.web-view';
+import extensionTemplateReactStyles from './extension-template.web-view.scss?inline';
 // @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
-import extensionTemplateHtml from "./extension-template-html.web-view.ejs";
-import type { SavedWebViewDefinition,
+import extensionTemplateHtml from './extension-template-html.web-view.ejs';
+import type {
+  SavedWebViewDefinition,
   WebViewContentType,
-  WebViewDefinition } from "shared/data/web-view.model";
-import { ExtensionVerseDataTypes, ExtensionVerseSetData } from "paranext-extension-template";
-import type { DataProviderUpdateInstructions } from "shared/models/data-provider.model";
-import { ExecutionActivationContext } from "extension-host/extension-types/extension-activation-context.model";
-import { ExecutionToken } from "node/models/execution-token.model";
-import { UnsubscriberAsync } from "shared/utils/papi-util";
-import type { IWebViewProvider } from "shared/models/web-view-provider.model";
-import type { UsfmDataProvider } from "usfm-data-provider";
+  WebViewDefinition,
+} from 'shared/data/web-view.model';
+import { ExtensionVerseDataTypes, ExtensionVerseSetData } from 'paranext-extension-template';
+import type { DataProviderUpdateInstructions } from 'shared/models/data-provider.model';
+import { ExecutionActivationContext } from 'extension-host/extension-types/extension-activation-context.model';
+import { ExecutionToken } from 'node/models/execution-token.model';
+import { UnsubscriberAsync } from 'shared/utils/papi-util';
+import type { IWebViewProvider } from 'shared/models/web-view-provider.model';
+import type { UsfmDataProvider } from 'usfm-data-provider';
 
-const { logger, dataProvider: { DataProviderEngine } } = papi;
+const {
+  logger,
+  dataProvider: { DataProviderEngine },
+} = papi;
 
 console.log(import.meta.env.PROD);
 
-logger.info("Extension template is importing!");
+logger.info('Extension template is importing!');
 
 /**
  * Example data provider engine that provides easy access to Scripture from an internet API.
@@ -185,7 +191,7 @@ class QuickVerseDataProviderEngine
       try {
         const usfmDataProvider = await this.usfmDataProviderPromise;
         if (!usfmDataProvider) throw Error('Unable to get USFM data provider');
-        const verseData = usfmDataProvider.getVerse({ verseString: selector });
+        const verseData = usfmDataProvider.getVerse(new VerseRef(selector));
         responseVerse = { text: (await verseData) ?? `${selector} not found` };
         // Cache the verse text, track the latest cached verse, and send an update
         this.verses[selector] = responseVerse;
@@ -207,8 +213,8 @@ class QuickVerseDataProviderEngine
   };
 
   /**
-   * Get a verse by its reference. Need to provide a get for every set, so we specify getHeresy here which does the same thing as
-   * getVerse.
+   * Get a verse by its reference. Need to provide a get for every set, so we specify getHeresy here
+   * which does the same thing as getVerse.
    * @param verseRef verse reference to get
    * @returns verse contents at this reference
    *
@@ -258,7 +264,8 @@ class QuickVerseDataProviderEngine
    * Private method that cannot be called on the network.
    * Valid selectors:
    * - `'notify'` - informs the listener of any changes in quick verse text but does not carry data
-   * - `'latest'` - the latest-updated quick verse text including pulling a verse from the server and a heretic changing the verse
+   * - `'latest'` - the latest-updated quick verse text including pulling a verse from the server
+   * and a heretic changing the verse
    * - Scripture Reference strings. Ex: `'Romans 1:16'`
    * @param selector selector provided by user
    * @returns selector for use internally
@@ -269,44 +276,40 @@ class QuickVerseDataProviderEngine
   }
 }
 
-const htmlWebViewType = "paranextExtensionTemplate.html";
+const htmlWebViewType = 'paranextExtensionTemplate.html';
 
 /**
  * Simple web view provider that provides sample html web views when papi requests them
  */
 const htmlWebViewProvider: IWebViewProvider = {
-  async getWebView(
-    savedWebView: SavedWebViewDefinition
-  ): Promise<WebViewDefinition | undefined> {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
     if (savedWebView.webViewType !== htmlWebViewType)
       throw new Error(
-        `${htmlWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`
+        `${htmlWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
       );
     return {
       ...savedWebView,
-      title: "Extension Template HTML",
-      contentType: "html" as WebViewContentType.HTML,
+      title: 'Extension Template HTML',
+      contentType: 'html' as WebViewContentType.HTML,
       content: extensionTemplateHtml,
     };
   },
 };
 
-const reactWebViewType = "paranextExtensionTemplate.react";
+const reactWebViewType = 'paranextExtensionTemplate.react';
 
 /**
  * Simple web view provider that provides React web views when papi requests them
  */
 const reactWebViewProvider: IWebViewProvider = {
-  async getWebView(
-    savedWebView: SavedWebViewDefinition
-  ): Promise<WebViewDefinition | undefined> {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
     if (savedWebView.webViewType !== reactWebViewType)
       throw new Error(
-        `${reactWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`
+        `${reactWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
       );
     return {
       ...savedWebView,
-      title: "Extension Template React",
+      title: 'Extension Template React',
       content: extensionTemplateReact,
       styles: extensionTemplateReactStyles,
     };
@@ -314,75 +317,72 @@ const reactWebViewProvider: IWebViewProvider = {
 };
 
 export async function activate(context: ExecutionActivationContext) {
-  logger.info("Extension template is activating!");
+  logger.info('Extension template is activating!');
 
   const token: ExecutionToken = context.executionToken;
   const warning = await papi.storage.readTextFileFromInstallDirectory(
     token,
-    "assets/heresy-warning.txt"
+    'assets/heresy-warning.txt',
   );
   const engine = new QuickVerseDataProviderEngine(warning.trim());
 
   let storedHeresyCount: number = 0;
   try {
     // If a user has never been a heretic, there is nothing to read
-    const loadedData = await papi.storage.readUserData(token, "heresy-count");
+    const loadedData = await papi.storage.readUserData(token, 'heresy-count');
     if (loadedData) storedHeresyCount = Number(loadedData);
   } catch (error) {
     logger.debug(error);
   }
   engine.heresyCount = storedHeresyCount;
 
-  const quickVerseDataProviderPromise =
-    papi.dataProvider.registerEngine<ExtensionVerseDataTypes>(
-      "paranextExtensionTemplate.quickVerse",
-      engine
-    );
+  const quickVerseDataProviderPromise = papi.dataProvider.registerEngine<ExtensionVerseDataTypes>(
+    'paranextExtensionTemplate.quickVerse',
+    engine,
+  );
 
   const htmlWebViewProviderPromise = papi.webViewProviders.register(
     htmlWebViewType,
-    htmlWebViewProvider
+    htmlWebViewProvider,
   );
 
   const reactWebViewProviderPromise = papi.webViewProviders.register(
     reactWebViewType,
-    reactWebViewProvider
+    reactWebViewProvider,
   );
 
   const unsubPromises = [
-    papi.commands.registerCommand(
-      "extensionTemplate.doStuff",
-      (message: string) => {
-        return `The template did stuff! ${message}`;
-      }
-    ),
+    papi.commands.registerCommand('extensionTemplate.doStuff', (message: string) => {
+      return `The template did stuff! ${message}`;
+    }),
   ];
 
-  // Create webviews or get an existing webview if one already exists for this type
-  // Note: here, we are using `existingId: '?'` to indicate we do not want to create a new webview
-  // if one already exists. The webview that already exists could have been created by anyone
-  // anywhere; it just has to match `webViewType`. See `paranext-core's hello-someone.ts` for an example of keeping
-  // an existing webview that was specifically created by `paranext-core's hello-someone`.
-  papi.webViews.getWebView(htmlWebViewType, undefined, { existingId: "?" });
-  papi.webViews.getWebView(reactWebViewType, undefined, { existingId: "?" });
+  // Create WebViews or get an existing WebView if one already exists for this type
+  // Note: here, we are using `existingId: '?'` to indicate we do not want to create a new WebView
+  // if one already exists. The WebView that already exists could have been created by anyone
+  // anywhere; it just has to match `webViewType`. See `paranext-core's hello-someone.ts` for an
+  // example of keeping an existing WebView that was specifically created by
+  // `paranext-core's hello-someone`.
+  papi.webViews.getWebView(htmlWebViewType, undefined, { existingId: '?' });
+  papi.webViews.getWebView(reactWebViewType, undefined, { existingId: '?' });
 
-  // For now, let's just make things easy and await the data provider promise at the end so we don't hold everything else up
+  // For now, let's just make things easy and await the data provider promise at the end so we don't
+  //  hold everything else up
   const quickVerseDataProvider = await quickVerseDataProviderPromise;
   const htmlWebViewProviderResolved = await htmlWebViewProviderPromise;
   const reactWebViewProviderResolved = await reactWebViewProviderPromise;
 
-  const combinedUnsubscriber: UnsubscriberAsync =
-    papi.util.aggregateUnsubscriberAsyncs(
-      (await Promise.all(unsubPromises)).concat([
-        quickVerseDataProvider.dispose,
-        htmlWebViewProviderResolved.dispose,
-        reactWebViewProviderResolved.dispose,
-      ])
-    );
-  logger.info("Extension template is finished activating!");
+  const combinedUnsubscriber: UnsubscriberAsync = papi.util.aggregateUnsubscriberAsyncs(
+    (await Promise.all(unsubPromises)).concat([
+      quickVerseDataProvider.dispose,
+      htmlWebViewProviderResolved.dispose,
+      reactWebViewProviderResolved.dispose,
+    ]),
+  );
+  logger.info('Extension template is finished activating!');
   return combinedUnsubscriber;
 }
 
 export async function deactivate() {
-  logger.info("Extension template is deactivating!");
+  logger.info('Extension template is deactivating!');
 }
