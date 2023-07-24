@@ -1,3 +1,4 @@
+import { VerseRef } from '@sillsdev/scripture';
 import papi from 'papi-backend';
 import IDataProviderEngine from 'shared/models/data-provider-engine.model';
 import extensionTemplateReact from './extension-template.web-view?inline';
