@@ -1,6 +1,6 @@
-import webpack from "webpack";
-import path from "path";
-import { glob } from "glob";
+import webpack from 'webpack';
+import path from 'path';
+import { glob } from 'glob';
 
 // #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/webpack.util.ts
 
@@ -10,12 +10,12 @@ import { glob } from "glob";
  *
  * Web Views should be named <name>.web-view.<extension>
  */
-const webViewTag = ".web-view";
+const webViewTag = '.web-view';
 /**
  * Glob filename matcher for React web views.
  * React Web Views should be named <name>.web-view.tsx
  */
-const webViewTsxGlob = "**/*.web-view.tsx";
+const webViewTsxGlob = '**/*.web-view.tsx';
 /**
  * Regex file name matcher for React web views.
  * React Web Views should be named <name>.web-view.tsx
@@ -24,14 +24,17 @@ const webViewTsxGlob = "**/*.web-view.tsx";
  */
 export const webViewTsxRegex = /.+\.web-view(\.[tj]sx)?$/;
 /** Name of adjacent folder used to store bundled WebView files */
-export const webViewTempDir = "temp-build";
+export const webViewTempDir = 'temp-build';
+
+/** Folder containing the built extension files */
+export const outputFolder = 'dist';
 
 /**
  * Get a list of TypeScript WebView files to bundle.
  * Path relative to project root
  */
 function getWebViewTsxPaths() {
-  return glob(webViewTsxGlob, { ignore: "node_modules/**" });
+  return glob(webViewTsxGlob, { ignore: 'node_modules/**' });
 }
 
 /**
@@ -42,7 +45,7 @@ function getWebViewTsxPaths() {
  */
 export function getWebViewTempPath(
   webViewPath: string,
-  join: (path: string, request: string) => string = path.join
+  join: (path: string, request: string) => string = path.join,
 ) {
   const webViewInfo = path.parse(webViewPath);
 
@@ -51,9 +54,9 @@ export function getWebViewTempPath(
   const webViewName = webViewInfo.ext === webViewTag ? webViewInfo.base : webViewInfo.name;
   // Put transpiled WebViews in a temp folder in the same directory as the original WebView
   // Make sure to preserve the ./ to indicate it is a relative path
-  return `${webViewPath.startsWith("./") ? "./" : ""}${join(
+  return `${webViewPath.startsWith('./') ? './' : ''}${join(
     webViewInfo.dir,
-    join(webViewTempDir, `${webViewName}.js`)
+    join(webViewTempDir, `${webViewName}.js`),
   )}`;
 }
 
@@ -71,7 +74,7 @@ export async function getWebViewEntries(): Promise<webpack.EntryObject> {
         import: webViewPath,
         filename: getWebViewTempPath(webViewPath),
       } as webpack.EntryObject[string],
-    ])
+    ]),
   );
   return webViewEntries;
 }
