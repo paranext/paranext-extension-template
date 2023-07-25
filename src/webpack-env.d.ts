@@ -15,7 +15,7 @@
  * dependencies into these files before providing them, unfortunately. However, React WebView
  * files are an exception as they are fully bundled.
  */
-declare module "*?inline" {
+declare module '*?inline' {
   const content: string;
   export default content;
 }
@@ -23,7 +23,7 @@ declare module "*?inline" {
 /**
  * Import files with no transformation as strings with "./file?raw"
  */
-declare module "*?raw" {
+declare module '*?raw' {
   const content: string;
   export default content;
 }
@@ -31,7 +31,7 @@ declare module "*?raw" {
 /**
  * Import scss, sass, and css files as strings
  */
-declare module "*.scss" {
+declare module '*.scss' {
   const content: string;
   export default content;
 }
@@ -39,7 +39,7 @@ declare module "*.scss" {
 /**
  * Import scss, sass, and css files as strings
  */
-declare module "*.sass" {
+declare module '*.sass' {
   const content: string;
   export default content;
 }
@@ -47,7 +47,7 @@ declare module "*.sass" {
 /**
  * Import scss, sass, and css files as strings
  */
-declare module "*.css" {
+declare module '*.css' {
   const content: string;
   export default content;
 }
@@ -62,7 +62,7 @@ declare module "*.css" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.png" {
+declare module '*.png' {
   const content: string;
   export default content;
 }
@@ -73,7 +73,7 @@ declare module "*.png" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.svg" {
+declare module '*.svg' {
   const content: string;
   export default content;
 }
@@ -84,7 +84,7 @@ declare module "*.svg" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.jpg" {
+declare module '*.jpg' {
   const content: string;
   export default content;
 }
@@ -95,7 +95,7 @@ declare module "*.jpg" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.jpeg" {
+declare module '*.jpeg' {
   const content: string;
   export default content;
 }
@@ -106,7 +106,7 @@ declare module "*.jpeg" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.gif" {
+declare module '*.gif' {
   const content: string;
   export default content;
 }
@@ -121,7 +121,7 @@ declare module "*.gif" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.woff" {
+declare module '*.woff' {
   const content: string;
   export default content;
 }
@@ -132,7 +132,7 @@ declare module "*.woff" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.woff2" {
+declare module '*.woff2' {
   const content: string;
   export default content;
 }
@@ -143,7 +143,7 @@ declare module "*.woff2" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.eot" {
+declare module '*.eot' {
   const content: string;
   export default content;
 }
@@ -154,7 +154,7 @@ declare module "*.eot" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.ttf" {
+declare module '*.ttf' {
   const content: string;
   export default content;
 }
@@ -165,7 +165,7 @@ declare module "*.ttf" {
  * Note: it is advised to use the `papi-extension:` protocol to load assets as data uris are
  * not currently supported in Platform.Bible
  */
-declare module "*.otf" {
+declare module '*.otf' {
   const content: string;
   export default content;
 }

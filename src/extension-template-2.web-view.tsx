@@ -1,12 +1,12 @@
-import papi from "papi-frontend";
-import { useCallback, useState } from "react";
+import papi from 'papi-frontend';
+import { useCallback, useState } from 'react';
 import {
   DoStuffEvent,
   ExtensionVerseDataProvider,
   ExtensionVerseDataTypes,
-} from "paranext-extension-template";
-import { Button } from "papi-components";
-import { QuickVerseDataTypes } from "quick-verse";
+} from 'paranext-extension-template';
+import { Button } from 'papi-components';
+import { QuickVerseDataTypes } from 'quick-verse';
 
 const {
   react: {
@@ -19,24 +19,24 @@ globalThis.webViewComponent = function ExtensionTemplate2() {
   const [clicks, setClicks] = useState(0);
 
   useEvent<DoStuffEvent>(
-    "extensionTemplate.doStuff",
-    useCallback(({ count }) => setClicks(count), [])
+    'extensionTemplate.doStuff',
+    useCallback(({ count }) => setClicks(count), []),
   );
 
   const extensionVerseDataProvider = useDataProvider<ExtensionVerseDataProvider>(
-    "paranextExtensionTemplate.quickVerse"
+    'paranextExtensionTemplate.quickVerse',
   );
 
-  const [latestExtensionVerseText] = useData.Verse<ExtensionVerseDataTypes, "Verse">(
+  const [latestExtensionVerseText] = useData.Verse<ExtensionVerseDataTypes, 'Verse'>(
     extensionVerseDataProvider,
-    "latest",
-    "Loading latest Scripture text from extension template..."
+    'latest',
+    'Loading latest Scripture text from extension template...',
   );
 
-  const [latestQuickVerseText] = useData.Verse<QuickVerseDataTypes, "Verse">(
-    "quickVerse.quickVerse",
-    "latest",
-    "Loading latest Scripture text from extension template..."
+  const [latestQuickVerseText] = useData.Verse<QuickVerseDataTypes, 'Verse'>(
+    'quickVerse.quickVerse',
+    'latest',
+    'Loading latest Scripture text from extension template...',
   );
 
   return (
@@ -51,12 +51,14 @@ globalThis.webViewComponent = function ExtensionTemplate2() {
           onClick={async () => {
             const start = performance.now();
             const result = await papi.commands.sendCommand(
-              "extensionTemplate.doStuff",
-              "Extension Template React Component"
+              'extensionTemplate.doStuff',
+              'Extension Template React Component',
             );
             setClicks(clicks + 1);
             logger.info(
-              `command:extensionTemplate.doStuff '${result.response}' took ${performance.now() - start} ms`
+              `command:extensionTemplate.doStuff '${result.response}' took ${
+                performance.now() - start
+              } ms`,
             );
           }}
         >

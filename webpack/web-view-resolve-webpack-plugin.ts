@@ -1,7 +1,7 @@
 // #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/web-view-resolve-webpack-plugin.ts
 
-import { Resolver } from "webpack";
-import { getWebViewTempPath, webViewTempDir, webViewTsxRegex } from "./webpack.util";
+import { Resolver } from 'webpack';
+import { getWebViewTempPath, webViewTempDir, webViewTsxRegex } from './webpack.util';
 
 // Webpack resolve plugins are enhanced-resolve plugins, which use tapable under the hood.
 // Unfortunately, most of this api is very scantly documented, so I pretty much went off of examples
@@ -19,9 +19,9 @@ export default class WebViewResolveWebpackPlugin {
   // However, it seems the mystery of available hooks is not solved as DirectoryNamedWebpackPlugin
   // uses hook names that are not in KnownHooks.
   /** Tap into the enhanced-resolve "resolve" hook with our resolve logic. */
-  readonly source = "resolve";
+  readonly source = 'resolve';
   /** Feed into the enhanced-resolve "resolve" hook from our resolve logic */
-  readonly target = "resolve";
+  readonly target = 'resolve';
 
   /**
    * Function that applies this plugin to webpack resolving. Use the resolver to "tap into" webpack
@@ -39,7 +39,7 @@ export default class WebViewResolveWebpackPlugin {
       // Add our plugin to the list of resolvers to run
       .tapAsync(
         // Internally note that this is our plugin
-        "WebViewResolveWebpackPlugin",
+        'WebViewResolveWebpackPlugin',
         /**
          * The logic to add to webpack resolving so it will look in the temp dir for built code.
          *
@@ -76,7 +76,7 @@ export default class WebViewResolveWebpackPlugin {
           // request.query sometimes doesn't have the ?stuff in it for some reason, so get it
           // manually from the request path if it isn't already in request.query
           if (!request.query) {
-            const queryInd = requestPath.lastIndexOf("?");
+            const queryInd = requestPath.lastIndexOf('?');
             // If there is a ? and something after it in the request path, use that as the resource
             // query
             if (queryInd >= 0 && queryInd < requestPath.length - 1) {
@@ -103,10 +103,10 @@ export default class WebViewResolveWebpackPlugin {
             },
             `Added temp dir to resolve request path: ${tempViewPath}`,
             resolveContext,
-            callback
+            callback,
           );
           return undefined;
-        }
+        },
       );
   }
 }
