@@ -21,10 +21,10 @@
     "start:production": "cross-env MAIN_ARGS=\"--extensions $INIT_CWD/dist\" concurrently \"npm:watch:production\" \"npm:start:core\"",
     "lint": "tsc"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@sillsdev/scripture": "^1.4.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.17.0",
