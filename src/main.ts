@@ -1,17 +1,20 @@
 import { VerseRef } from '@sillsdev/scripture';
 import papi from 'papi-backend';
 import IDataProviderEngine from 'shared/models/data-provider-engine.model';
-// @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
-import extensionTemplateReact from './extension-template.web-view';
+import extensionTemplateReact from './extension-template.web-view?inline';
+import extensionTemplateReact2 from './extension-template-2.web-view?inline';
 import extensionTemplateReactStyles from './extension-template.web-view.scss?inline';
-// @ts-expect-error ts(1192) this file has no default export; the text is exported by rollup
-import extensionTemplateHtml from './extension-template-html.web-view.ejs';
+import extensionTemplateHtml from './extension-template-html.web-view.html?inline';
 import type {
   SavedWebViewDefinition,
   WebViewContentType,
   WebViewDefinition,
 } from 'shared/data/web-view.model';
-import { ExtensionVerseDataTypes, ExtensionVerseSetData } from 'paranext-extension-template';
+import type {
+  DoStuffEvent,
+  ExtensionVerseDataTypes,
+  ExtensionVerseSetData,
+} from 'paranext-extension-template';
 import type { DataProviderUpdateInstructions } from 'shared/models/data-provider.model';
 import { ExecutionActivationContext } from 'extension-host/extension-types/extension-activation-context.model';
 import { ExecutionToken } from 'node/models/execution-token.model';
@@ -24,7 +27,7 @@ const {
   dataProvider: { DataProviderEngine },
 } = papi;
 
-console.log(import.meta.env.PROD);
+console.log(process.env.NODE_ENV);
 
 logger.info('Extension template is importing!');
 
@@ -316,6 +319,26 @@ const reactWebViewProvider: IWebViewProvider = {
   },
 };
 
+const reactWebViewType2 = 'paranextExtensionTemplate.react2';
+
+/**
+ * Simple web view provider that provides React web views when papi requests them
+ */
+const reactWebViewProvider2: IWebViewProvider = {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
+    if (savedWebView.webViewType !== reactWebViewType2)
+      throw new Error(
+        `${reactWebViewType2} provider received request to provide a ${savedWebView.webViewType} web view`,
+      );
+    return {
+      ...savedWebView,
+      title: 'Extension Template React 2',
+      content: extensionTemplateReact2,
+      styles: extensionTemplateReactStyles,
+    };
+  },
+};
+
 export async function activate(context: ExecutionActivationContext) {
   logger.info('Extension template is activating!');
 
@@ -351,9 +374,28 @@ export async function activate(context: ExecutionActivationContext) {
     reactWebViewProvider,
   );
 
+  const reactWebViewProvider2Promise = papi.webViewProviders.register(
+    reactWebViewType2,
+    reactWebViewProvider2,
+  );
+
+  let doStuffCount = 0;
+  // Emitter to tell subscribers how many times we have done stuff
+  const onDoStuffEmitter = papi.network.createNetworkEventEmitter<DoStuffEvent>(
+    'extensionTemplate.doStuff',
+  );
+
   const unsubPromises = [
     papi.commands.registerCommand('extensionTemplate.doStuff', (message: string) => {
-      return `The template did stuff! ${message}`;
+      doStuffCount += 1;
+      // Inform subscribers of the update
+      onDoStuffEmitter.emit({ count: doStuffCount });
+
+      // Respond to the sender of the command with the news
+      return {
+        response: `The template did stuff ${doStuffCount} times! ${message}`,
+        occurrence: doStuffCount,
+      };
     }),
   ];
 
@@ -365,18 +407,25 @@ export async function activate(context: ExecutionActivationContext) {
   // `paranext-core's hello-someone`.
   papi.webViews.getWebView(htmlWebViewType, undefined, { existingId: '?' });
   papi.webViews.getWebView(reactWebViewType, undefined, { existingId: '?' });
+  papi.webViews.getWebView(reactWebViewType2, undefined, { existingId: '?' });
 
   // For now, let's just make things easy and await the data provider promise at the end so we don't
   //  hold everything else up
   const quickVerseDataProvider = await quickVerseDataProviderPromise;
   const htmlWebViewProviderResolved = await htmlWebViewProviderPromise;
   const reactWebViewProviderResolved = await reactWebViewProviderPromise;
+  const reactWebViewProvider2Resolved = await reactWebViewProvider2Promise;
 
   const combinedUnsubscriber: UnsubscriberAsync = papi.util.aggregateUnsubscriberAsyncs(
     (await Promise.all(unsubPromises)).concat([
       quickVerseDataProvider.dispose,
       htmlWebViewProviderResolved.dispose,
       reactWebViewProviderResolved.dispose,
+      reactWebViewProvider2Resolved.dispose,
+      () => {
+        onDoStuffEmitter.dispose();
+        return Promise.resolve(true);
+      },
     ]),
   );
   logger.info('Extension template is finished activating!');

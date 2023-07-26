@@ -3,17 +3,20 @@ Basic extension template for Paranext
 
 ## Summary
 
-This is a Vite project template pre-configured to build Paranext extensions.
+This is a webpack project template pre-configured to build Paranext extensions.
 
- - `lib` contains the source code for the extension
-   - `lib/main.ts` is the main entry file for the extension
-   - `*.web-view.tsx` files will be treated as React WebViews
-   - `*.web-view.ejs` files will be treated as HTML WebViews
- - `public` contains static files that are transferred to the build folder
-   - `public/manifest.json` is the manifest file that defines the extension
-   - `public/package.json` defines the npm package for this extension and is required for Paranext to use it appropriately
-   - `public/paranext-extension-template.d.ts` is this extension's types file that other extensions can use
- - `dist` is a generated folder containing your built extension files
+- `package.json` contains information about this extension npm package. It is required for Paranext to use the extension properly. It is copied into the build folder
+- `src` contains the source code for the extension
+  - `src/main.ts` is the main entry file for the extension
+  - `src/types/paranext-extension-template.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`. It is copied into the build folder
+  - `*.web-view.tsx` files will be treated as React WebViews
+  - `*.web-view.html` files are a conventional way to provide HTML WebViews (no special functionality)
+- `public` contains static files that are copied into the build folder
+  - `public/manifest.json` is the manifest file that defines the extension and important properties for Paranext
+  - `public/package.json` defines the npm package for this extension and is required for Paranext to use it appropriately
+  - `public/assets` contains asset files the extension and its WebViews can retrieve using the `papi-extension:` protocol
+- `dist` is a generated folder containing your built extension files
+- `release` is a generated folder containing a zip of your built extension files
 
 ## To install
 
@@ -40,37 +43,60 @@ Note: The built extension will be in the `dist` folder. In order for Paranext to
 
 ### Building your extension independently
 
-To watch extension files (in `lib`) for changes:
+To watch extension files (in `src`) for changes:
 
-`npm run start:vite`
+`npm run watch`
 
 To build the extension once:
 
-`npm run build:vite`
+`npm run build`
 
-## Vite Build Explanation
+## To package for distribution
 
-This extension template is built by Vite in two steps: a WebView transpilation step and a packaging step:
+To package your extension into a zip file for distribution:
 
-## Build 1: TypeScript WebView transpilation
+`npm run package`
 
-Vite prepares TypeScript WebViews for use and outputs them into `temp-vite` folders adjacent to the WebView files:
+## Special features of the template
+
+This template has special features and specific configuration to make building an extension for Paranext easier. Following are a few important notes:
+
+### React WebView files - `.web-view.tsx`
+
+Paranext WebViews must be treated differently than other code, so this template makes doing that simpler:
+
+- WebView code must be bundled and can only import specific packages provided by Paranext (see `externals` in `webpack.config.base.ts`), so this template bundles React WebViews before bundling the main extension file to support this requirement. The template discovers and bundles files that end with `.web-view.tsx` in this way.
+  - Note: while watching for changes, if you add a new `.web-view.tsx` file, you must either restart webpack or make a nominal change and save in an existing `.web-view.tsx` file for webpack to discover and bundle this new file.
+- WebView code and styles must be provided to the `papi` as strings, so you can import WebView files with [`?inline`](#special-imports) after the file path to import the file as a string.
+
+### Special imports
+
+- Adding `?inline` to the end of a file import causes that file to be imported as a string after being transformed by webpack loaders but before bundling dependencies (except if that file is a React WebView file, in which case dependencies will be bundled). The contents of the file will be on the file's default export.
+  - Ex: `import myFile from './file-path?inline`
+- Adding `?raw` to the end of a file import treats a file the same way as `?inline` except that it will be imported directly without being transformed by webpack.
+
+### Misc features
+
+- Paranext extension code must be bundled all together in one file, so webpack bundles all the code together into one main extension file.
+- Paranext extensions can interact with other extensions, but they cannot import and export like in a normal Node environment. Instead, they interact through the `papi`. As such, the `src/types` folder contains this extension's declarations file that tells other extensions how to interact with it through the `papi`.
+
+### Two-step webpack build
+
+This extension template is built by webpack (`webpack.config.ts`) in two steps: a WebView bundling step and a main bundling step:
+
+#### Build 1: TypeScript WebView bundling
+
+Webpack (`./webpack/webpack.config.web-view.ts`) prepares TypeScript WebViews for use and outputs them into temporary build folders adjacent to the WebView files:
 - Formats WebViews to match how they should look to work in Paranext
 - Transpiles React/TypeScript WebViews into JavaScript
-- Packages dependencies into the WebViews
+- Bundles dependencies into the WebViews
 - Embeds Sourcemaps into the WebViews inline
 
-## Built 2: Packaging
+#### Build 2: Main and final bundling
 
-Vite packages the extension together into the `dist` folder:
+Webpack (`./webpack/webpack.config.main.ts`) prepares the main extension file and bundles the extension together into the `dist` folder:
 - Transpiles the main TypeScript file and its imported modules into JavaScript
-- Injects the WebViews into the main file
-- Packages dependencies into the main file
-- Generates sourcemaps for the file
-- Packages everything up into an extension folder in `dist`
-
-Note: When performing the second build step, the following line may occur in your console. Please feel free to ignore it as it is a false positive. It is likely showing because WebViews are embedded in the entry file:
-
-```bash
-transforming (1) lib\main.ts[plugin:ImportManager] It seems like there are multiple imports of module 'react'. You should examine that.
-```
+- Injects the bundled WebViews into the main file
+- Bundles dependencies into the main file
+- Embeds Sourcemaps into the file inline
+- Packages everything up into an extension folder `dist`
