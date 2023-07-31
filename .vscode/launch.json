@@ -37,7 +37,7 @@
       "runtimeArgs": ["run", "build"]
     },
     {
-      "name": "Debug Paranext Core with Extension",
+      "name": "Debug Platform with Extension",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",

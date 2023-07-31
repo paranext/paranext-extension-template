@@ -17,8 +17,6 @@ import type {
 } from 'paranext-extension-template';
 import type { DataProviderUpdateInstructions } from 'shared/models/data-provider.model';
 import { ExecutionActivationContext } from 'extension-host/extension-types/extension-activation-context.model';
-import { ExecutionToken } from 'node/models/execution-token.model';
-import { UnsubscriberAsync } from 'shared/utils/papi-util';
 import type { IWebViewProvider } from 'shared/models/web-view-provider.model';
 import type { UsfmDataProvider } from 'usfm-data-provider';
 
@@ -342,9 +340,8 @@ const reactWebViewProvider2: IWebViewProvider = {
 export async function activate(context: ExecutionActivationContext) {
   logger.info('Extension template is activating!');
 
-  const token: ExecutionToken = context.executionToken;
   const warning = await papi.storage.readTextFileFromInstallDirectory(
-    token,
+    context.executionToken,
     'assets/heresy-warning.txt',
   );
   const engine = new QuickVerseDataProviderEngine(warning.trim());
@@ -352,7 +349,7 @@ export async function activate(context: ExecutionActivationContext) {
   let storedHeresyCount: number = 0;
   try {
     // If a user has never been a heretic, there is nothing to read
-    const loadedData = await papi.storage.readUserData(token, 'heresy-count');
+    const loadedData = await papi.storage.readUserData(context.executionToken, 'heresy-count');
     if (loadedData) storedHeresyCount = Number(loadedData);
   } catch (error) {
     logger.debug(error);
@@ -379,25 +376,23 @@ export async function activate(context: ExecutionActivationContext) {
     reactWebViewProvider2,
   );
 
-  let doStuffCount = 0;
   // Emitter to tell subscribers how many times we have done stuff
   const onDoStuffEmitter = papi.network.createNetworkEventEmitter<DoStuffEvent>(
     'extensionTemplate.doStuff',
   );
 
-  const unsubPromises = [
-    papi.commands.registerCommand('extensionTemplate.doStuff', (message: string) => {
-      doStuffCount += 1;
-      // Inform subscribers of the update
-      onDoStuffEmitter.emit({ count: doStuffCount });
+  let doStuffCount = 0;
+  const doStuffCommandPromise = papi.commands.registerCommand('extensionTemplate.doStuff', (message: string) => {
+    doStuffCount += 1;
+    // Inform subscribers of the update
+    onDoStuffEmitter.emit({ count: doStuffCount });
 
-      // Respond to the sender of the command with the news
-      return {
-        response: `The template did stuff ${doStuffCount} times! ${message}`,
-        occurrence: doStuffCount,
-      };
-    }),
-  ];
+    // Respond to the sender of the command with the news
+    return {
+      response: `The template did stuff ${doStuffCount} times! ${message}`,
+      occurrence: doStuffCount,
+    };
+  });
 
   // Create WebViews or get an existing WebView if one already exists for this type
   // Note: here, we are using `existingId: '?'` to indicate we do not want to create a new WebView
@@ -409,27 +404,17 @@ export async function activate(context: ExecutionActivationContext) {
   papi.webViews.getWebView(reactWebViewType, undefined, { existingId: '?' });
   papi.webViews.getWebView(reactWebViewType2, undefined, { existingId: '?' });
 
-  // For now, let's just make things easy and await the data provider promise at the end so we don't
-  //  hold everything else up
-  const quickVerseDataProvider = await quickVerseDataProviderPromise;
-  const htmlWebViewProviderResolved = await htmlWebViewProviderPromise;
-  const reactWebViewProviderResolved = await reactWebViewProviderPromise;
-  const reactWebViewProvider2Resolved = await reactWebViewProvider2Promise;
-
-  const combinedUnsubscriber: UnsubscriberAsync = papi.util.aggregateUnsubscriberAsyncs(
-    (await Promise.all(unsubPromises)).concat([
-      quickVerseDataProvider.dispose,
-      htmlWebViewProviderResolved.dispose,
-      reactWebViewProviderResolved.dispose,
-      reactWebViewProvider2Resolved.dispose,
-      () => {
-        onDoStuffEmitter.dispose();
-        return Promise.resolve(true);
-      },
-    ]),
+  // Await the data provider promise at the end so we don't hold everything else up
+  context.registrations.add(
+    await quickVerseDataProviderPromise,
+    await htmlWebViewProviderPromise,
+    await reactWebViewProviderPromise,
+    await reactWebViewProvider2Promise,
+    onDoStuffEmitter,
+    await doStuffCommandPromise
   );
+
   logger.info('Extension template is finished activating!');
-  return combinedUnsubscriber;
 }
 
 export async function deactivate() {
