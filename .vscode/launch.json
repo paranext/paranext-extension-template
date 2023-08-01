@@ -52,6 +52,21 @@
         "group": "",
         "order": 1
       }
+    },
+    {
+      "name": "Attach to Platform app",
+      "type": "node",
+      "request": "attach",
+      "port": 5858,
+      "timeout": 15000
+    },
+    {
+      "name": "Attach to Renderer",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9223,
+      "webRoot": "${workspaceFolder}",
+      "timeout": 15000
     }
   ]
 }
