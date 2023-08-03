@@ -60,7 +60,7 @@ To package your extension into a zip file for distribution:
 
 ## To update
 
-When breaking changes are introduced to the `paranext-extension-template`, extensions based on this template need to be updated in order to keep working properly with `paranext-core`. Instructions on when and how to perform this update can be found on [this wiki page](https://github.com/paranext/paranext-extension-template/wiki/Merging-Template-Changes-into-Your-Extension).
+The `paranext-extension-template` will be updated regularly, and will sometimes receive updates that help with breaking changes on `paranext-core`. So we recommend you periodically update your extension by merging the latest template updates into your extension. You can do so by following [these instructions](https://github.com/paranext/paranext-extension-template/wiki/Merging-Template-Changes-into-Your-Extension).
 
 ## Special features of the template
 
