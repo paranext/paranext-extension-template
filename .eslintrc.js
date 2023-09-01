@@ -3,9 +3,6 @@ module.exports = {
     // https://github.com/electron-react-boilerplate/eslint-config-erb/blob/main/index.js
     // airbnb rules are embedded in erb https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb
     'erb',
-    // Make sure this is last so it gets the chance to override other configs.
-    // See https://github.com/prettier/eslint-config-prettier and https://github.com/prettier/eslint-plugin-prettier
-    'plugin:prettier/recommended',
   ],
 
   rules: {
@@ -102,12 +99,6 @@ module.exports = {
       files: ['*.ts'],
       rules: {
         'import/prefer-default-export': 'off',
-      },
-    },
-    {
-      files: ['*.tsx'],
-      rules: {
-        'compat/compat': 'off',
       },
     },
   ],

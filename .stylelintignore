@@ -24,6 +24,8 @@ npm-debug.log.*
 
 # Packager output
 dist
+release
+temp-build
 
 # generated files
 package-lock.json
