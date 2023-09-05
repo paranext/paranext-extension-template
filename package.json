@@ -25,6 +25,7 @@
     "lint-fix": "npm run lint-fix:scripts && npm run lint:styles -- --fix",
     "lint-fix:scripts": "prettier --write \"**/*.{ts,tsx,js,jsx}\" && npm run lint:scripts"
   },
+  "browserslist": [],
   "peerDependencies": {
     "@sillsdev/scripture": "^1.4.0",
     "react": ">=18.2.0",
