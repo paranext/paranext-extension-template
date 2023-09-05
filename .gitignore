@@ -14,7 +14,7 @@ dist-ssr
 *.local
 
 # formatting and linting
-# .eslintcache
+.eslintcache
 
 # Editor directories and files
 .idea
