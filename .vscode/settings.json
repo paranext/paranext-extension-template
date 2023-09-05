@@ -2,6 +2,11 @@
   "editor.rulers": [100],
   "editor.wordWrapColumn": 100,
 
+  "files.associations": {
+    ".eslintignore": "ignore",
+    ".prettierignore": "ignore",
+    ".stylelintignore": "ignore"
+  },
   "files.eol": "\n",
   "cSpell.words": [
     "asyncs",
