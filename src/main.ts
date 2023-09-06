@@ -1,10 +1,6 @@
 import { VerseRef } from '@sillsdev/scripture';
 import papi from 'papi-backend';
-import IDataProviderEngine from 'shared/models/data-provider-engine.model';
-import extensionTemplateReact from './extension-template.web-view?inline';
-import extensionTemplateReact2 from './extension-template-2.web-view?inline';
-import extensionTemplateReactStyles from './extension-template.web-view.scss?inline';
-import extensionTemplateHtml from './extension-template-html.web-view.html?inline';
+import type IDataProviderEngine from 'shared/models/data-provider-engine.model';
 import type {
   SavedWebViewDefinition,
   WebViewContentType,
@@ -16,15 +12,20 @@ import type {
   ExtensionVerseSetData,
 } from 'paranext-extension-template';
 import type { DataProviderUpdateInstructions } from 'shared/models/data-provider.model';
-import { ExecutionActivationContext } from 'extension-host/extension-types/extension-activation-context.model';
+import type { ExecutionActivationContext } from 'extension-host/extension-types/extension-activation-context.model';
 import type { IWebViewProvider } from 'shared/models/web-view-provider.model';
 import type { UsfmDataProvider } from 'usfm-data-provider';
+import extensionTemplateReact from './extension-template.web-view?inline';
+import extensionTemplateReact2 from './extension-template-2.web-view?inline';
+import extensionTemplateReactStyles from './extension-template.web-view.scss?inline';
+import extensionTemplateHtml from './extension-template-html.web-view.html?inline';
 
 const {
   logger,
   dataProvider: { DataProviderEngine },
 } = papi;
 
+// eslint-disable-next-line
 console.log(process.env.NODE_ENV);
 
 logger.info('Extension template is importing!');
@@ -382,17 +383,20 @@ export async function activate(context: ExecutionActivationContext) {
   );
 
   let doStuffCount = 0;
-  const doStuffCommandPromise = papi.commands.registerCommand('extensionTemplate.doStuff', (message: string) => {
-    doStuffCount += 1;
-    // Inform subscribers of the update
-    onDoStuffEmitter.emit({ count: doStuffCount });
+  const doStuffCommandPromise = papi.commands.registerCommand(
+    'extensionTemplate.doStuff',
+    (message: string) => {
+      doStuffCount += 1;
+      // Inform subscribers of the update
+      onDoStuffEmitter.emit({ count: doStuffCount });
 
-    // Respond to the sender of the command with the news
-    return {
-      response: `The template did stuff ${doStuffCount} times! ${message}`,
-      occurrence: doStuffCount,
-    };
-  });
+      // Respond to the sender of the command with the news
+      return {
+        response: `The template did stuff ${doStuffCount} times! ${message}`,
+        occurrence: doStuffCount,
+      };
+    },
+  );
 
   // Create WebViews or get an existing WebView if one already exists for this type
   // Note: here, we are using `existingId: '?'` to indicate we do not want to create a new WebView
@@ -411,7 +415,7 @@ export async function activate(context: ExecutionActivationContext) {
     await reactWebViewProviderPromise,
     await reactWebViewProvider2Promise,
     onDoStuffEmitter,
-    await doStuffCommandPromise
+    await doStuffCommandPromise,
   );
 
   logger.info('Extension template is finished activating!');

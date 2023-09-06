@@ -1,12 +1,12 @@
 import papi from 'papi-frontend';
 import { useCallback, useState } from 'react';
-import {
+import type {
   DoStuffEvent,
   ExtensionVerseDataProvider,
   ExtensionVerseDataTypes,
 } from 'paranext-extension-template';
 import { Button } from 'papi-components';
-import { QuickVerseDataTypes } from 'quick-verse';
+import type { QuickVerseDataTypes } from 'quick-verse';
 
 const {
   react: {
