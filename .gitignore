@@ -13,6 +13,9 @@ release
 dist-ssr
 *.local
 
+# formatting and linting
+.eslintcache
+
 # Editor directories and files
 .idea
 .DS_Store
