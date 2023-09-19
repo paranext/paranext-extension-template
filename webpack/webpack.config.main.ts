@@ -52,7 +52,7 @@ const configMain: webpack.Configuration = merge(configBase, {
         // We want all files from the public folder copied into the output folder
         { from: 'public', to: './' },
         // Copy this extension's type declaration file into the output folder
-        { from: 'src/types/paranext-extension-template.d.ts', to: './' },
+        { from: 'src/types/extension-types.d.ts', to: './' },
         // We need to distribute the package.json for Paranext to read the extension properly
         { from: 'package.json', to: './' },
       ],
