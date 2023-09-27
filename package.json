@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "main": "paranext-extension-template.js",
-  "types": "extension-types.d.ts",
+  "types": "paranext-extension-template.d.ts",
   "author": "Paranext",
   "license": "MIT",
   "scripts": {
