@@ -1,6 +1,4 @@
-import papi from 'papi-backend';
-
-const { logger } = papi;
+import { logger } from 'papi-backend';
 
 export async function activate() {
   logger.info('Extension template is activating!');
