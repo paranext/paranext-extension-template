@@ -68,6 +68,7 @@ module.exports = {
     ],
     // Should use our logger anytime you want logs that persist. Otherwise use console only in testing
     'no-console': 'warn',
+    'no-null/no-null': 2,
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     'prettier/prettier': ['warn', { tabWidth: 2, trailingComma: 'all' }],
     'react/jsx-indent-props': ['warn', 2],
@@ -109,7 +110,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     createDefaultProgram: true,
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'no-null'],
   settings: {
     'import/resolver': {
       typescript: {
