@@ -22,7 +22,7 @@ npm-debug.log.*
 *.sass.d.ts
 *.scss.d.ts
 
-# Packager output
+# Built files
 dist
 release
 temp-build

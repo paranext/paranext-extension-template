@@ -6,7 +6,7 @@ import configBase, { LIBRARY_TYPE, rootDir } from './webpack.config.base';
 import WebViewResolveWebpackPlugin from './web-view-resolve-webpack-plugin';
 import { outputFolder } from './webpack.util';
 
-/** webpack configuration for building main */
+/** Webpack configuration for building main */
 const configMain: webpack.Configuration = merge(configBase, {
   // #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/webpack.config.main.ts
 
@@ -42,7 +42,7 @@ const configMain: webpack.Configuration = merge(configBase, {
   entry: {
     main: {
       import: './src/main.ts',
-      filename: 'paranext-extension-template.js',
+      filename: './src/main.js',
     },
   },
   plugins: [
@@ -50,11 +50,15 @@ const configMain: webpack.Configuration = merge(configBase, {
     new CopyPlugin({
       patterns: [
         // We want all files from the public folder copied into the output folder
-        { from: 'public', to: './' },
-        // Copy this extension's type declaration file into the output folder
-        { from: 'src/types/paranext-extension-template.d.ts', to: './' },
-        // We need to distribute the package.json for Paranext to read the extension properly
-        { from: 'package.json', to: './' },
+        { from: 'public', to: './', noErrorOnMissing: true },
+        // We want all files from the assets folder copied into the output folder under assets
+        { from: 'assets', to: './assets/', noErrorOnMissing: true },
+        // Copy this extension's type declaration file into the output folder under src/types
+        { from: 'src/types', to: './src/types', noErrorOnMissing: true },
+        // We need to distribute the package.json for Platform.Bible to read the extension properly
+        { from: 'package.json', to: './', noErrorOnMissing: true },
+        // We need to distribute the manifest.json to inform Platform.Bible about the extension
+        { from: 'manifest.json', to: './' },
       ],
     }),
   ],

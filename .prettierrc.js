@@ -3,6 +3,9 @@ module.exports = {
   trailingComma: 'all',
   endOfLine: 'lf',
   singleQuote: true,
+  // prettier-plugin-jsdoc options
+  tsdoc: true,
+  plugins: ['prettier-plugin-jsdoc'],
   overrides: [
     {
       files: '*.json',
