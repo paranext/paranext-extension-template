@@ -1,4 +1,4 @@
-// #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/web-view-resolve-webpack-plugin.ts
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/web-view-resolve-webpack-plugin.ts
 
 import { Resolver } from 'webpack';
 import { getWebViewTempPath, webViewTempDir, webViewTsxRegex } from './webpack.util';

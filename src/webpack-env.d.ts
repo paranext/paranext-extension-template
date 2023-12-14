@@ -1,4 +1,4 @@
-// #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/src/webpack-env.d.ts
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/src/webpack-env.d.ts
 
 /**
  * Modules provided by our webpack configuration
