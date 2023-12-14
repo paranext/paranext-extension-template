@@ -132,46 +132,4 @@ For more information, read [the instructions on the wiki](https://github.com/par
 
 ## Special features in this project
 
-This project has special features and specific configuration to make building an extension for Platform.Bible easier. Following are a few important notes:
-
-### React WebView files - `.web-view.tsx`
-
-Platform.Bible WebViews must be treated differently than other code, so this project makes doing that simpler:
-
-- WebView code must be bundled and can only import specific packages provided by Platform.Bible (see `externals` in `webpack.config.base.ts`), so this project bundles React WebViews before bundling the main extension file to support this requirement. The project discovers and bundles files that end with `.web-view.tsx` in this way.
-  - Note: while watching for changes, if you add a new `.web-view.tsx` file, you must either restart webpack or make a nominal change and save in an existing `.web-view.tsx` file for webpack to discover and bundle this new file.
-- WebView code and styles must be provided to the `papi` as strings, so you can import WebView files with [`?inline`](#special-imports) after the file path to import the file as a string.
-
-### Special imports
-
-- Adding `?inline` to the end of a file import causes that file to be imported as a string after being transformed by webpack loaders but before bundling dependencies (except if that file is a React WebView file, in which case dependencies will be bundled). The contents of the file will be on the file's default export.
-  - Ex: `import myFile from './file-path?inline`
-- Adding `?raw` to the end of a file import treats a file the same way as `?inline` except that it will be imported directly without being transformed by webpack.
-
-### Misc features
-
-- Platform.Bible extension code must be bundled all together in one file, so webpack bundles all the code together into one main extension file.
-- Platform.Bible extensions can interact with other extensions, but they cannot import and export like in a normal Node environment. Instead, they interact through the `papi`. As such, the `src/types` folder contains this extension's declarations file that tells other extensions how to interact with it through the `papi`.
-
-### Two-step webpack build
-
-This extension is built by webpack (`webpack.config.ts`) in two steps: a WebView bundling step and a main bundling step:
-
-#### Build 1: TypeScript WebView bundling
-
-Webpack (`./webpack/webpack.config.web-view.ts`) prepares TypeScript WebViews for use and outputs them into temporary build folders adjacent to the WebView files:
-
-- Formats WebViews to match how they should look to work in Platform.Bible
-- Transpiles React/TypeScript WebViews into JavaScript
-- Bundles dependencies into the WebViews
-- Embeds Sourcemaps into the WebViews inline
-
-#### Build 2: Main and final bundling
-
-Webpack (`./webpack/webpack.config.main.ts`) prepares the main extension file and bundles the extension together into the `dist` folder:
-
-- Transpiles the main TypeScript file and its imported modules into JavaScript
-- Injects the bundled WebViews into the main file
-- Bundles dependencies into the main file
-- Embeds Sourcemaps into the file inline
-- Packages everything up into an extension folder `dist`
+This project has special features and specific configuration to make building an extension for Platform.Bible easier. See [Special features of `paranext-multi-extension-template`](https://github.com/paranext/paranext-multi-extension-template#special-features-of-the-template) for information on these special features.
