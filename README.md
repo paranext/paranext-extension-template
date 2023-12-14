@@ -128,6 +128,8 @@ git merge template/main --allow-unrelated-histories
 
 For more information, read [the instructions on the wiki](https://github.com/paranext/paranext-extension-template/wiki/Merging-Template-Changes-into-Your-Extension).
 
+**Note:** The merge/squash commits created when updating this repo from the template are important; Git uses them to compare the files for future updates. If you edit this repo's Git history, please preserve these commits (do not squash them, for example) to avoid duplicated merge conflicts in the future.
+
 ## Special features in this project
 
 This project has special features and specific configuration to make building an extension for Platform.Bible easier. Following are a few important notes:
