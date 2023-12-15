@@ -1,4 +1,4 @@
-// #region shared with https://github.com/paranext/paranext-core/blob/main/extensions/webpack/webpack.config.base.ts
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.base.ts
 
 import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
@@ -23,7 +23,7 @@ export const LIBRARY_TYPE: NonNullable<webpack.Configuration['externalsType']> =
 // Note: we do not want to do any chunking because neither webViews nor main can import dependencies
 // other than those listed in configBase.externals. Each webView must contain all its dependency
 // code, and main must contain all its dependency code.
-/** webpack configuration shared by webView building and main building */
+/** Webpack configuration shared by webView building and main building */
 const configBase: webpack.Configuration = {
   // The operating directory for webpack instead of current working directory
   context: rootDir,
@@ -33,10 +33,10 @@ const configBase: webpack.Configuration = {
   watchOptions: {
     ignored: ['**/node_modules'],
   },
-  // Use require for externals as it is the only type of importing that Paranext supports
+  // Use require for externals as it is the only type of importing that Platform.Bible supports
   // https://webpack.js.org/configuration/externals/#externalstypecommonjs
   externalsType: LIBRARY_TYPE,
-  // Modules that Paranext supplies to extensions https://webpack.js.org/configuration/externals/
+  // Modules that Platform.Bible supplies to extensions https://webpack.js.org/configuration/externals/
   // All other dependencies must be bundled into the extension
   externals: [
     'react',
@@ -88,9 +88,7 @@ const configBase: webpack.Configuration = {
         },
         exclude: /node_modules/,
       },
-      /**
-       * Import scss, sass, and css files as strings
-       */
+      /** Import scss, sass, and css files as strings */
       // https://webpack.js.org/loaders/sass-loader/#getting-started
       {
         test: /\.(sa|sc|c)ss$/,
@@ -103,7 +101,8 @@ const configBase: webpack.Configuration = {
           'sass-loader',
         ],
       },
-      /** Load images as data uris
+      /**
+       * Load images as data uris
        *
        * Note: it is generally advised to use the `papi-extension:` protocol to load assets
        */
@@ -122,9 +121,7 @@ const configBase: webpack.Configuration = {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/inline',
       },
-      /**
-       * Import files with no transformation as strings with "./file?raw"
-       */
+      /** Import files with no transformation as strings with "./file?raw" */
       // This must be the last rule in order to be applied before all other transformations
       // https://webpack.js.org/guides/asset-modules/#replacing-inline-loader-syntax
       {

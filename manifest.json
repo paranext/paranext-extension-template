@@ -4,6 +4,7 @@
   "description": "Extension template for Paranext. Powered by webpack",
   "author": "Paranext",
   "license": "MIT",
-  "main": "paranext-extension-template.ts",
+  "main": "src/main.ts",
+  "types": "src/types/paranext-extension-template.d.ts",
   "activationEvents": []
 }

@@ -13,7 +13,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    // Paranext requires modules to be CommonJS
+    // Platform.Bible requires modules to be CommonJS
     // Running webpack.config.ts also requires CommonJS
     // https://webpack.js.org/configuration/configuration-languages/#typescript
     "module": "CommonJS",
@@ -55,9 +55,14 @@
     // We want sourcemaps so we can bundle them with webpack
     "sourceMap": true,
     // We need a baseurl for webpack's tsconfig path aliases plugin
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
+  "exclude": ["node_modules"],
   "ts-node": {
     // This allows us to use path aliases in ts-node
     "require": ["tsconfig-paths/register"],

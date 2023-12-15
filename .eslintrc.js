@@ -3,12 +3,14 @@ module.exports = {
     // https://github.com/electron-react-boilerplate/eslint-config-erb/blob/main/index.js
     // airbnb rules are embedded in erb https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb
     'erb',
+    // Make sure this is last so it gets the chance to override other configs.
+    // See https://github.com/prettier/eslint-config-prettier and https://github.com/prettier/eslint-plugin-prettier
+    'plugin:prettier/recommended',
   ],
 
   rules: {
     // #region From paranext-core root .eslintrc.js
-    // Some rules are commented out since they have overrides in the
-    // 'Overrides from paranext-core extension .eslintrc.cjs' section
+    // Some rules are commented out since they have overrides in following sections
 
     // #region ERB rules
 
@@ -22,7 +24,7 @@ module.exports = {
 
     // #endregion
 
-    // #region Paranext rules
+    // #region Platform.Bible rules
 
     // Rules in each section are generally in alphabetical order. However, several
     // `@typescript-eslint` rules require disabling the equivalent ESLint rule. So in these cases
@@ -47,6 +49,17 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'error',
     'no-redeclare': 'off',
     '@typescript-eslint/no-redeclare': 'error',
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['shared/*', 'renderer/*', 'extension-host/*', 'node/*', 'client/*', 'main/*'],
+            message: `Importing from this path is not allowed. Try importing from @papi/core. Imports from paths like 'shared', 'renderer', 'node', 'client' and 'main' are not allowed to prevent unnecessary import break.`,
+          },
+        ],
+      },
+    ],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
     'no-use-before-define': 'off',
@@ -70,17 +83,7 @@ module.exports = {
     'no-console': 'warn',
     'no-null/no-null': 2,
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
-    'no-restricted-imports': [
-      'error',
-      {
-        patterns: [
-          {
-            group: ['shared/*', 'renderer/*', 'extension-host/*', 'node/*', 'client/*', 'main/*'],
-            message: `Importing from this path is not allowed. Try importing from @papi/core. Imports from paths like 'shared', 'renderer', 'node', 'client' and 'main' are not allowed to prevent unnecessary import break.`,
-          },
-        ],
-      },
-    ],
+    'no-type-assertion/no-type-assertion': 'error',
     'prettier/prettier': ['warn', { tabWidth: 2, trailingComma: 'all' }],
     'react/jsx-indent-props': ['warn', 2],
     'react/jsx-props-no-spreading': ['error', { custom: 'ignore' }],
@@ -90,7 +93,7 @@ module.exports = {
 
     // #endregion
 
-    // #region Overrides from paranext-core extension .eslintrc.cjs
+    // #region Overrides shared with paranext-multi-extension-template .eslintrc.cjs
 
     'import/no-unresolved': ['error', { ignore: ['@papi'] }],
 
@@ -113,6 +116,13 @@ module.exports = {
         'import/prefer-default-export': 'off',
       },
     },
+    {
+      files: ['./lib/*', './webpack/*'],
+      rules: {
+        // These files are scripts not running in Platform.Bible, so they can't use the logger
+        'no-console': 'off',
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: 2020,
@@ -121,7 +131,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     createDefaultProgram: true,
   },
-  plugins: ['@typescript-eslint', 'no-null'],
+  plugins: ['@typescript-eslint', 'no-type-assertion', 'no-null'],
   settings: {
     'import/resolver': {
       typescript: {
