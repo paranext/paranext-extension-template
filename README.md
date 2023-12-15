@@ -33,11 +33,18 @@ To make the process of customizing from the template as smooth as possible, we r
 
   - Replace `paranext-extension-template` with `your-extension-name` (2 occurrences)
   - Replace the description with your own description
+  - Update ownership information and other relevant fields as desired
 
 - In `package.json`:
 
   - Replace `paranext-extension-template` with `your-extension-name` (2 occurrences)
   - Replace the description with your own description
+  - Update ownership information and other relevant fields as desired
+
+- In `LICENSE`:
+
+  - Adjust as desired (feel free to choose a different license)
+  - If you choose to stay with the current license, update the copyright statement
 
 - Rename `src/types/paranext-extension-template.d.ts` to `src/types/<your_extension_name>.d.ts`
 
