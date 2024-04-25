@@ -9,6 +9,6 @@
   "menus": "contributions/menus.json",
   "settings": "contributions/settings.json",
   "projectSettings": "contributions/projectSettings.json",
-  "localizedStrings": "contribution/localizedStrings.json",
+  "localizedStrings": "contributions/localizedStrings.json",
   "activationEvents": []
 }
