@@ -44,13 +44,14 @@ To make the process of customizing from the template as smooth as possible, we r
 - In `contributions/displayData.json`:
 
   - If your extension has an icon, update the `icon` value to point towards the icon file (for example: `./assets/icon.svg`)
-  - Update the `en` entry so that:
-    
+  - Update the `en` entry of `localizedDisplayInfo` so that:
+
     - `displayName` contains a human-readable name for your extension (i.e. `Your Extension Name`).
     - `shortSummary` contains a short, few sentence summary of what your extension does.
     - `description` points to a Markdown (`.md`) file containing the full description of your extension (similar to what you would put in a `README`).
-  - If your extension supports multiple languages, copy and paste the `en` entry, changing `en` to the [BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) of the language you want to support, and translate the `displayName`, `shortSummary`, and `description` fields appropriately. We recommend naming your description files `description-<language tag>.md`.
-  
+
+  - If your extension supports multiple languages, add another entry to `localizedDisplayInfo` by copying and pasting the `en` entry, changing `en` to the [BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) of the language you want to support, and translating the `displayName`, `shortSummary`, and `description` fields appropriately. We recommend naming your description files `description-<language tag>.md`.
+
 - In `LICENSE`:
 
   - Adjust as desired (feel free to choose a different license)
