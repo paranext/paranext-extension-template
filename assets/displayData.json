@@ -4,7 +4,7 @@
     "en": {
       "displayName": "Paranext Extension Template",
       "shortSummary": "Base template for a Paranext Extension",
-      "description": "./description-en.md"
+      "description": "assets/descriptions/description-en.md"
     }
   }
 }
