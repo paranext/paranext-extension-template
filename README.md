@@ -34,6 +34,8 @@ To make the process of customizing from the template as smooth as possible, we r
   - Replace `paranext-extension-template` with `your-extension-name` (2 occurrences)
   - Replace the description with your own description
   - Update ownership information and other relevant fields as desired
+  - Update the `moreInfoUrl` field to web URL to a page where users can find out more information about you / your organization / your extension.
+  - Update the `supportUrl` field to web URL to a support page where users can request help and report issues with your extension.
 
 - In `package.json`:
 

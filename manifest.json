@@ -5,6 +5,8 @@
   "author": "Paranext",
   "license": "MIT",
   "main": "src/main.ts",
+  "moreInfoUrl": "",
+  "supportUrl": "",
   "types": "src/types/paranext-extension-template.d.ts",
   "menus": "contributions/menus.json",
   "settings": "contributions/settings.json",
