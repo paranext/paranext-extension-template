@@ -1,3 +1,4 @@
+// @ts-ignore: TS2307 - Cannot find module '@papi/backend' or its corresponding type declarations
 import { logger } from '@papi/backend';
 
 export async function activate() {
