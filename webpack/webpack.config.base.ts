@@ -98,6 +98,8 @@ const configBase: webpack.Configuration = {
           // into dom. style-loader would add html style elements for our styles if we used it
           // We are not using css-loader since we are getting style files using ?inline. css-loader
           // would allow us to import CSS into CommonJS
+          // Processes style transformations in PostCSS - after scss so PostCSS runs on just css
+          'postcss-loader',
           // Compiles Sass to CSS
           'sass-loader',
         ],
