@@ -1,24 +1,15 @@
-// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.base.ts
-
 import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import webpack from 'webpack';
+import { LIBRARY_TYPE } from './webpack.util';
+
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.base.ts
 
 const isDev = process.env.NODE_ENV !== 'production';
 const shouldGenerateSourceMaps = isDev || process.env.DEBUG_PROD;
 
 /** The base directory from which webpack should operate (should be the root repo folder) */
 export const rootDir = path.resolve(__dirname, '..');
-
-/**
- * The module format of library we want webpack to use for externals and create for our extensions
- *
- * @see webpack.Configuration['externalsType'] for info about external import format
- * @see webpack.LibraryOptions['type'] for info about library format
- */
-// commonjs-static formats the code to export everything on module.exports.<export_name> so it works
-// well in cjs or esm https://webpack.js.org/configuration/output/#type-commonjs-static
-export const LIBRARY_TYPE: NonNullable<webpack.Configuration['externalsType']> = 'commonjs-static';
 
 // Note: we do not want to do any chunking because neither webViews nor main can import dependencies
 // other than those listed in configBase.externals. Each webView must contain all its dependency
