@@ -25,20 +25,23 @@ To make the process of customizing from the template as smooth as possible, we r
 
 #### Replace placeholders
 
+When using your extension name, we recommend that you use [lowerCamelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case) in some contexts and [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case) in other contexts. We generally recommend lowerCamelCase when using the name in code (like making a new command on the PAPI, for example), and we recommend kebab-case when using the name in relation to the file system, the repository, `npm`, and the extension's `.d.ts` types module. The following instructions are written accordingly.
+
 - At the top of this `README.md`:
 
-  - Replace the first line `# paranext-extension-template` with `# your-extension-name`
+  - Replace the first line `# paranext-extension-template` with `# your-extension-name` (kebab-case)
   - Below the first line, replace the extension description with your own description
-  - In the [Summary](#summary) section, replace `src/types/paranext-extension-template.d.ts` with `src/types/<your_extension_name>.d.ts`
+  - In the [Summary](#summary) section, replace `src/types/paranext-extension-template.d.ts` with `src/types/your-extension-name.d.ts` (kebab-case)
 
 - In `manifest.json`:
 
-  - Replace `paranext-extension-template` with `your-extension-name` (2 occurrences)
+  - Replace `paranextExtensionTemplate` with `yourExtensionName` (lowerCamelCase)
+  - Replace `src/types/paranext-extension-template.d.ts` with `src/types/your-extension-name.d.ts` (kebab-case)
   - Update ownership information and other relevant fields as desired
 
 - In `package.json`:
 
-  - Replace `paranext-extension-template` with `your-extension-name` (2 occurrences)
+  - Replace `paranext-extension-template` with `your-extension-name` (2 occurrences - kebab-case)
   - Update ownership information and other relevant fields as desired
 
 - In `assets/displayData.json`:
@@ -59,7 +62,7 @@ To make the process of customizing from the template as smooth as possible, we r
   - Adjust as desired (feel free to choose a different license)
   - If you choose to stay with the current license, update the copyright statement
 
-- Rename `src/types/paranext-extension-template.d.ts` to `src/types/<your_extension_name>.d.ts`
+- Rename `src/types/paranext-extension-template.d.ts` to `src/types/your-extension-name.d.ts` (kebab-case)
 
   - In this renamed file, replace `paranext-extension-template` with `your-extension-name`
 
