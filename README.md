@@ -21,7 +21,7 @@ Note: please skip this section and continue with [Replace placeholders](#replace
 To make the process of customizing from the template as smooth as possible, we recommend you do the following before anything else:
 
 - [Install and set up this repo](#to-install)
-- Set up this extension to be able to [Update this extension from the template](#to-update-this-extension-from-the-template)
+- [Update this extension from the template](#to-update-this-extension-from-the-template) to hook everything up for smooth updates in the future.
 
 #### Replace placeholders
 
