@@ -193,6 +193,9 @@ These steps will walk you through releasing a version on GitHub and bumping the 
 
     </details>
 
+3. In GitHub, adjust the new draft release's body and other metadata as desired, then publish the release.
+4. Open a PR and merge the newly created `bump-versions-<next_version>` branch.
+
 ### Publishing problems
 
 Following are some problems you may encounter while publishing and steps to solve them.
@@ -207,9 +210,6 @@ Error: Failed to load native binding
 ```
 
 You may have a different effective version of `@swc/core` than `paranext-core` does. Please make sure the version of `@swc/core` in your `package-lock.json` is the same as its version in [`paranext-core/package-lock.json`](https://github.com/paranext/paranext-core/blob/main/package-lock.json). If they are not the same, please fix them to be the same by running `npm i -D @swc/core <version>` where the version is the version of `@swc/core` installed in `paranext-core/package-lock.json` (if you would like to set the version of `@swc/core` back to what it was before in `package.json` to stay synced with the extension template, change it back manually in `package.json` and then run `npm i`). If they are already the same, you may need to try regenerating your `package-lock.json` file by deleting it and running `npm i`.
-
-3. In GitHub, adjust the new draft release's body and other metadata as desired, then publish the release.
-4. Open a PR and merge the newly created `bump-versions-<next_version>` branch.
 
 ## To update this extension from the template
 
