@@ -75,6 +75,8 @@ const shouldAllowWorkingChanges = process.argv.includes('--allow-working-changes
   console.log(
     `Bumped versions to ${newVersion} and pushed to branch ${branchName}. Please create a pull request to merge this branch into main.`,
   );
+
+  return 0;
 })();
 
 // #endregion
