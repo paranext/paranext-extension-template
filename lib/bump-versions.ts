@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { checkForWorkingChanges, execCommand } from './git.util';
 
-// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/lib/bump-version.ts#L53
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/lib/bump-version.ts
 
 // This script checks out a new branch, bumps the versions of all extensions in the repo,
 // and then commits the changes. It is generally expected that you will be on `main` when you run
@@ -56,7 +56,7 @@ const shouldAllowWorkingChanges = process.argv.includes('--allow-working-changes
     return 1;
   }
 
-  // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/lib/bump-version.ts#L53
+  // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/lib/bump-version.ts
 
   // Commit the changes
   try {

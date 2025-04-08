@@ -4,7 +4,7 @@ import path from 'path';
 
 const execAsync = promisify(exec);
 
-// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/lib/git.util.ts#L53
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/lib/git.util.ts
 
 /**
  * Executes a command from the repo root directory, logging both the command and the results.
