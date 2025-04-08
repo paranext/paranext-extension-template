@@ -7,7 +7,7 @@ import { checkForWorkingChanges, execCommand } from './git.util';
 // and then commits the changes. It is generally expected that you will be on `main` when you run
 // this script.
 
-// Provide the new version as a command line argument e.g. `node bump-versions.js 1.2.3-alpha.0`
+// Provide the new version as a command line argument e.g. `npx ts-node ./lib/bump-versions.ts 1.2.3-alpha.0`
 // Provide `--allow-working-changes` after the version to allow working changes to be part of making
 // the new version (useful if you want to do other things related to versioning before running this)
 
