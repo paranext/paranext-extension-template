@@ -171,9 +171,9 @@ These steps will walk you through releasing a version on GitHub and bumping the 
    ```bash
    npm run package
    # Create a new pre-release in GitHub on tag `v<version>`
-   # Copy `.github/assets/release-body.md` into the GitHub branch
-   # Generate changelog
-   # Attach contents of `release` folder
+   # Copy `.github/assets/release-body.md` into the release body
+   # Press the "Generate release notes" button in the release creation page to generate a changelog
+   # Attach contents of `release` folder to the release
    ```
 
    Then bump versions by running the following:
