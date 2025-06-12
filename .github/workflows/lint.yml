@@ -2,9 +2,9 @@ name: Lint
 
 on:
   push:
-    branches: [main]
+    branches: ['main', 'release-prep', 'hotfix-*']
   pull_request:
-    branches: [main]
+    branches: ['main', 'release-prep', 'hotfix-*']
 
 permissions:
   contents: read
@@ -27,8 +27,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run all linters
-        run: npm run lint
-
       - name: Run format checking
         run: npm run format:check
+
+      - name: Run all linters
+        run: npm run lint
