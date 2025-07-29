@@ -8,7 +8,7 @@ Basic extension template for Platform.Bible
 
 This is a Webpack project template pre-configured to build a Platform.Bible extension. It includes only the bare essentials required for an extension to work.
 
-Note that the `*.web-view.*` files and the `assets` folder mentioned in [Summary](#summary) are **not** included in this template. For examples of what these might look like, refer to any extension that is basedon either this template or the [paranext-multi-extension-template](https://github.com/paranext/paranext-multi-extension-template) — for instance, the [Text Collection extension](https://github.com/paranext/paratext-bible-extensions/tree/main/src/paratext-bible-text-collection).
+Note that the `*.web-view.*` files and the `assets` folder mentioned in [Summary](#summary) are **not** included in this template. For examples of what these might look like, refer to any extension that is based on either this template or the [paranext-multi-extension-template](https://github.com/paranext/paranext-multi-extension-template) — for instance, the [Text Collection extension](https://github.com/paranext/paratext-bible-extensions/tree/main/src/paratext-bible-text-collection).
 
 **Important:** Before proceding to use this template, consider whether you intend to build a single extension to be packaged and installed independently, or a set of related extensions that should be used together. If the latter, it would be better to use the [template pre-configured to build an arbitrary number of Platform.Bible extensions in one repo](https://github.com/paranext/paranext-multi-extension-template) instead of this template.
 
@@ -108,6 +108,8 @@ The general file structure for an extension is as follows:
   - `.github/assets/release-body.md` combined with a generated changelog becomes the body of [releases published using GitHub Actions](#publishing)
 - `dist/` is a generated folder containing the built extension files
 - `release/` is a generated folder containing a zip of the built extension files
+
+> See the [Extension Anatomy wiki page](https://github.com/paranext/paranext-extension-template/wiki/Extension-Anatomy) for more information about the various files that comprise an extension and their relationships to each other.
 
 <!-- BEGIN SYNC [Install-Part1] version 07-28-2025 -->
 
