@@ -29,7 +29,7 @@ To make the process of customizing from the template as smooth as possible, we r
 
 For your extension name, we recommend that you use [lowerCamelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case) in some contexts and [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case) in other contexts. We generally recommend lowerCamelCase when using the name in code (like making a new command on the PAPI, for example), and we recommend kebab-case when using the name in relation to the file system, the repository, `npm`, and the extension's `.d.ts` types module. The following instructions are written accordingly.
 
-- At the top of this `README.md`:
+- In this `README.md`:
 
   - Replace the first line `# paranext-extension-template` with `# your-extension-name` (kebab-case)
   - Below the first line, replace the extension description with your own description
