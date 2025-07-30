@@ -1,3 +1,5 @@
+<!-- Attention template README maintainers: The content in the portion of this README following the Template Info section roughly parallels that of the paranext-multi-extension-template. When editing one, please consider whether similar changes should also be made in the other.-->
+
 # paranext-extension-template
 
 Basic extension template for Platform.Bible
@@ -84,8 +86,6 @@ Note: if you [update this extension from the template](#to-update-this-extension
 
 <!-- Closing comment tag for Template Info Section -->
 
-<!-- Note for README maintainers: The content in the remainder of this README roughly parallels that of the paranext-multi-extension-template. When editing one, please consider whether similar changes should also be made in the other. To help prevent unintended divergence, pairs of HTML comments (BEGIN SYNC / END SYNC) have been added to identify sections that should be kept in sync unless there is a good reason to diverge. For those sections, it should generally be possible to make the desired edits in one README, copy them wholesale to the other, and then update the "version" date to reflect that they are synchronized. If they ever need to diverge, then the SYNC comments can be removed from both. In derived extension projects, developers may remove or adjust the SYNC comments in customized sections as needed to reflect differences from the templates. -->
-
 ## Summary
 
 The general file structure for an extension is as follows:
@@ -111,8 +111,6 @@ The general file structure for an extension is as follows:
 
 > See the [Extension Anatomy wiki page](https://github.com/paranext/paranext-extension-template/wiki/Extension-Anatomy) for more information about the various files that comprise an extension and their relationships to each other.
 
-<!-- BEGIN SYNC [Install-Part1] version 07-28-2025 -->
-
 ## To install
 
 ### Install dependencies:
@@ -120,17 +118,9 @@ The general file structure for an extension is as follows:
 1. Follow the instructions to install [`paranext-core`](https://github.com/paranext/paranext-core#developer-install). We recommend you clone `paranext-core` in the same parent directory in which you cloned this repository so you do not have to [reconfigure paths](#configure-paths-to-paranext-core-repo) to `paranext-core`.
 2. In this repo, run `npm install` to install local and published dependencies
 
-Note: running `npm install` automatically adds remotes that help with [updating from the templates](#to-update-this-repo-and-extensions-from-the-templates).
-
-<!-- END SYNC [Install-Part1] -->
-
-<!-- BEGIN SYNC [Install-Part2] version 07-28-2025 -->
-
 ### Configure paths to `paranext-core` repo
 
 If you cloned `paranext-core` anywhere other than in the same parent directory in which you cloned this repository, update the paths to `paranext-core` in this repository's `package.json` to point to the correct `paranext-core` directory.
-
-<!-- END SYNC [Install-Part2] -->
 
 ## To run
 
@@ -161,8 +151,6 @@ To package this extension into a zip file for distribution:
 ## Publishing
 
 These steps will walk you through releasing a version on GitHub and bumping the version to a new version so future changes apply to the new in-progress version.
-
-<!-- BEGIN SYNC [Publishing-part1] version 07-28-2025 -->
 
 1. Make sure the versions in this repo are on the version number you want to release. If they are not, run the `bump-versions` npm script to set the versions to what you want to release. This script will create a branch named `bump-versions-<version>` from your current head with the needed changes. Open a PR and merge that new branch into the branch you plan to release from. For example, to bump branch `my-branch` to version 0.2.0, run the following:
 
@@ -202,8 +190,6 @@ These steps will walk you through releasing a version on GitHub and bumping the 
 
    Or bump versions manually:
    
-   <!-- END SYNC [Publishing-part1] version 07-28-2025 -->
-
    ```bash
    git checkout -b bump-versions-<next_version>
    npm version <next_version> --git-tag-version false
@@ -212,8 +198,6 @@ These steps will walk you through releasing a version on GitHub and bumping the 
    ```
 
     </details>
-
-<!-- BEGIN SYNC [Publishing-part2] version 07-28-2025 -->
 
 3. In GitHub, adjust the new draft release's body and other metadata as desired, then publish the release.
 4. Open a PR and merge the newly created `bump-versions-<next_version>` branch.
@@ -232,8 +216,6 @@ Error: Failed to load native binding
 ```
 
 You may have a different effective version of `@swc/core` than `paranext-core` does. Please make sure the version of `@swc/core` in your `package-lock.json` is the same as its version in [`paranext-core/package-lock.json`](https://github.com/paranext/paranext-core/blob/main/package-lock.json). If they are not the same, please fix them to be the same by running `npm i -D @swc/core@<version>` where the version is the version of `@swc/core` installed in `paranext-core/package-lock.json` (if you would like to set the version of `@swc/core` back to what it was before in `package.json` to stay synced with the extension template, change it back manually in `package.json` and then run `npm i`). If they are already the same, you may need to try regenerating your `package-lock.json` file by deleting it and running `npm i`.
-
-<!-- END SYNC [Publishing-part2] version 07-28-2025 -->
 
 ## To update this extension from the template
 
