@@ -189,7 +189,7 @@ These steps will walk you through releasing a version on GitHub and bumping the 
    ```
 
    Or bump versions manually:
-   
+
    ```bash
    git checkout -b bump-versions-<next_version>
    npm version <next_version> --git-tag-version false
