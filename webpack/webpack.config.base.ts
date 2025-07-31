@@ -1,6 +1,6 @@
 import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import webpack from 'webpack';
+import type { Configuration } from 'webpack';
 import { LIBRARY_TYPE } from './webpack.util';
 
 // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.base.ts
@@ -15,7 +15,7 @@ export const rootDir = path.resolve(__dirname, '..');
 // other than those listed in configBase.externals. Each WebView must contain all its dependency
 // code, and main must contain all its dependency code.
 /** Webpack configuration shared by WebView building and main building */
-const configBase: webpack.Configuration = {
+const configBase: Configuration = {
   // The operating directory for webpack instead of current working directory
   context: rootDir,
   mode: isDev ? 'development' : 'production',

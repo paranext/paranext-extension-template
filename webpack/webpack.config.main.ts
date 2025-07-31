@@ -1,4 +1,4 @@
-import webpack from 'webpack';
+import type { Configuration } from 'webpack';
 import path from 'path';
 import merge from 'webpack-merge';
 import CopyPlugin from 'copy-webpack-plugin';
@@ -7,7 +7,7 @@ import WebViewResolveWebpackPlugin from './web-view-resolve-webpack-plugin';
 import { LIBRARY_TYPE, outputFolder } from './webpack.util';
 
 /** Webpack configuration for building main */
-const configMain: webpack.Configuration = merge(configBase, {
+const configMain: Configuration = merge(configBase, {
   // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.main.ts
 
   // Build for web (default) because, though Platform.Bible loads this in node, built-in node

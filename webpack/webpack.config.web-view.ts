@@ -1,12 +1,12 @@
 // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.web-view.ts
 
-import webpack from 'webpack';
+import type { Configuration } from 'webpack';
 import merge from 'webpack-merge';
 import configBase, { rootDir } from './webpack.config.base';
 import { getWebViewEntries } from './webpack.util';
 
 /** Webpack configuration for building WebViews */
-const configWebView: webpack.Configuration = merge(configBase, {
+const configWebView: Configuration = merge(configBase, {
   // Build for web since Platform.Bible loads WebViews in browser. Platform.Bible provides specific
   // modules that extensions may import as listed in `webpack.config.base`'s `externals`. Read more at
   // https://github.com/paranext/paranext/wiki/Module-import-restrictions
