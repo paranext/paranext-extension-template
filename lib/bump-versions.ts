@@ -62,7 +62,7 @@ const shouldAllowWorkingChanges = process.argv.includes('--allow-working-changes
 
   // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/lib/bump-versions.ts and https://github.com/paranext/paranext/blob/main/lib/bump-versions.ts
 
-  // Lint fix the changes
+  // Format the changes
   try {
     await execCommand(`npm run format`);
   } catch (e) {
