@@ -155,7 +155,7 @@
 /* #region shared with https://github.com/paranext/paranext-core/blob/main/lib/platform-bible-react/src/index.css but with the difference of being scoped to .pr-twp in platform-bible-react */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply tw-border-border tw-outline-ring/50;
   }
 
   body {
