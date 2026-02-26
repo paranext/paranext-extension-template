@@ -56,6 +56,14 @@
     "sourceMap": true,
     // We need a baseurl for webpack's tsconfig path aliases plugin
     "baseUrl": "./",
+    // Redirect all 'react' and 'react/*' module imports to the local node_modules copy. Without
+    // this, TypeScript loads a second copy of @types/react from ../paranext-core/node_modules when
+    // processing packages from `paranext-core`, which causes TS2300 (duplicate identifier) errors.
+    // This means `@types/react` needs to be at the same version between this repo and `paranext-core`
+    "paths": {
+      "react": ["node_modules/@types/react/index"],
+      "react/*": ["node_modules/@types/react/*"]
+    },
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,

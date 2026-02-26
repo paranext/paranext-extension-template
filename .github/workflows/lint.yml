@@ -48,6 +48,10 @@ jobs:
         working-directory: extension-repo
         run: npm run format:check
 
+      - name: Run type checking
+        working-directory: extension-repo
+        run: npm run typecheck
+
       - name: Run all linters
         working-directory: extension-repo
         run: npm run lint
