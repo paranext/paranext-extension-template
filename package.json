@@ -27,6 +27,7 @@
     "lint-fix": "npm run lint-fix:scripts && npm run lint:styles -- --fix",
     "lint-fix:scripts": "npm run format && npm run lint:scripts",
     "bump-versions": "ts-node ./lib/bump-versions.ts",
+    "test": "vitest --passWithNoTests",
     "typecheck": "tsc -p ./tsconfig.json"
   },
   "browserslist": [],
@@ -86,6 +87,7 @@
     "tsconfig-paths": "^4.2.0",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
     "webpack": "^5.105.2",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^6.0.1",

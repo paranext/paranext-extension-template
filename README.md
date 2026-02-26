@@ -97,6 +97,7 @@ The general file structure for an extension is as follows:
   - `src/types/paranext-extension-template.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`. It is copied into the build folder
   - `*.web-view.tsx` files will be treated as React WebViews
   - `*.web-view.html` files are a conventional way to provide HTML WebViews (no special functionality)
+  - `*.test.ts` and `*.test.tsx` files contain vitest unit tests that can be run with `npm run test`
 - `assets/` contains asset files the extension and its WebViews can retrieve using the `papi-extension:` protocol, as well as textual descriptions in various languages. It is copied into the build folder
   - `assets/displayData.json` contains (optionally) a path to the extension's icon file as well as text for the extension's display name, short summary, and path to the full description file
   - `assets/descriptions/` contains textual descriptions of the extension in various languages

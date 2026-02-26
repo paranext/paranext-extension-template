@@ -44,13 +44,17 @@ jobs:
         working-directory: paranext-core
         run: npm ci --ignore-scripts
 
-      - name: Run format checking
-        working-directory: extension-repo
-        run: npm run format:check
-
       - name: Run type checking
         working-directory: extension-repo
         run: npm run typecheck
+
+      - name: Run unit tests
+        working-directory: extension-repo
+        run: npm test
+
+      - name: Run format checking
+        working-directory: extension-repo
+        run: npm run format:check
 
       - name: Run all linters
         working-directory: extension-repo
