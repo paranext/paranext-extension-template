@@ -100,7 +100,18 @@ const configBase: webpack.Configuration = {
           // Processes style transformations in PostCSS - after scss so PostCSS runs on just css
           'postcss-loader',
           // Compiles Sass to CSS
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                // Stay expanded even in production. sass-loader would otherwise compress, which
+                // strips the space in `@import 'tailwindcss' prefix(tw);` — @tailwindcss/postcss
+                // then never registers the `tw` variant and every `@apply tw:*` fails the build.
+                // Nothing is lost: Tailwind's PostCSS plugin optimizes production output itself.
+                style: 'expanded',
+              },
+            },
+          },
         ],
       },
       /**
