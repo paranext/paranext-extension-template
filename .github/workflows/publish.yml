@@ -73,6 +73,13 @@ jobs:
             paranext-core/package-lock.json
           node-version: ${{ fromJson(steps.package_json.outputs.volta).node }}
 
+      # Our editor `file:` dependency points into core's gitignored `dev-packages/staging/`, which
+      # only core's `preinstall` creates — and the core install below runs `--ignore-scripts`. npm
+      # links a missing `file:` target silently, so skipping this leaves a broken symlink.
+      - name: Stage paranext-core's dev packages
+        working-directory: paranext-core
+        run: node .erb/scripts/stage-dev-packages.ts
+
       - name: Install packages
         run: |
           npm ci
