@@ -51,6 +51,13 @@ jobs:
         working-directory: paranext-core
         run: npm ci --ignore-scripts
 
+      # The staged packages come from the branch dev-packages.json pins, which moves independently
+      # of core's commits, so the tree just installed can describe a different editor than core's
+      # lockfile does. Core's postinstall makes this check; `--ignore-scripts` above skips it.
+      - name: Verify core's staged dev packages match its lockfile
+        working-directory: paranext-core
+        run: npm run verify:dev-packages
+
       - name: Run format checking
         working-directory: extension-repo
         run: npm run format:check
