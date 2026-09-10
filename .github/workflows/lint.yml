@@ -41,7 +41,7 @@ jobs:
       # links a missing `file:` target silently, so skipping this leaves a broken symlink.
       - name: Stage paranext-core's dev packages
         working-directory: paranext-core
-        run: node .erb/scripts/stage-dev-packages.ts
+        run: npm run stage-dev-packages
 
       - name: Install extension dependencies
         working-directory: extension-repo
