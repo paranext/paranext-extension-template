@@ -42,19 +42,21 @@ jobs:
         run: echo "${{ toJSON(github.event.inputs) }}"
 
       - name: Checkout git repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: extension-repo
+          persist-credentials: false
 
       - name: Checkout paranext-core repo to use its sub-packages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: paranext-core
           repository: paranext/paranext-core
+          persist-credentials: false
 
       - name: Read package.json
         id: package_json
-        uses: zoexx/github-action-json-file-properties@1.0.6
+        uses: zoexx/github-action-json-file-properties@1.0.7
         with:
           file_path: 'extension-repo/package.json'
 
@@ -65,7 +67,7 @@ jobs:
           exit 1
 
       - name: Install Node and NPM
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           cache: npm
           cache-dependency-path: |
@@ -125,10 +127,11 @@ jobs:
 
       - name: Checkout bump ref
         if: ${{ inputs.newVersionAfterPublishing != '' && inputs.bumpRef != '' && inputs.bumpRef != (github.head_ref || github.ref_name) }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           clean: false
           path: extension-repo
+          persist-credentials: false
           ref: ${{ inputs.bumpRef }}
 
       - name: Bump repo versions
