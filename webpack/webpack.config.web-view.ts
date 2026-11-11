@@ -1,9 +1,11 @@
 // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.web-view.ts
 
+import path from 'path';
 import webpack from 'webpack';
 import merge from 'webpack-merge';
 import configBase, { rootDir } from './webpack.config.base';
 import { getWebViewEntries } from './webpack.util';
+import { EmitShippedModulesPlugin } from './emit-shipped-modules-plugin';
 
 /** Webpack configuration for building WebViews */
 const configWebView: webpack.Configuration = merge(configBase, {
@@ -22,6 +24,13 @@ const configWebView: webpack.Configuration = merge(configBase, {
     // Build all the WebViews in the folders where they are with the temp dir appended
     path: rootDir,
   },
+  plugins: [
+    // Lists the modules this build bundled, for third-party license notices
+    new EmitShippedModulesPlugin({
+      bundleName: 'extension-web-view',
+      outputDir: path.join(rootDir, '.notices', 'modules'),
+    }),
+  ],
 });
 
 export default configWebView;

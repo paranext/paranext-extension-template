@@ -7,6 +7,8 @@
   "author": "Paranext",
   "license": "MIT",
   "scripts": {
+    "prebuild": "ts-node ./webpack/notices-build-id.ts",
+    "prebuild:production": "ts-node ./webpack/notices-build-id.ts",
     "build:web-view": "webpack --config ./webpack/webpack.config.web-view.ts",
     "build:main": "webpack --config ./webpack/webpack.config.main.ts",
     "build": "webpack",
