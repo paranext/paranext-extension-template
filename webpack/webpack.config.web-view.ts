@@ -1,3 +1,8 @@
+// The notices plugin below and the `path` import it needs sit OUTSIDE the shared regions:
+// paranext-core's copy of this file registers its own plugin from a different path, so inside a
+// region they would merge into that copy as duplicate imports without a conflict.
+import path from 'path';
+
 // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.web-view.ts
 
 import TerserPlugin from 'terser-webpack-plugin';
@@ -6,8 +11,17 @@ import merge from 'webpack-merge';
 import configBase, { rootDir } from './webpack.config.base';
 import { getWebViewEntries } from './webpack.util';
 
+// #endregion
+
+import { EmitShippedModulesPlugin } from './emit-shipped-modules-plugin';
+// A namespace import, so this second import of `./webpack.util` stays outside the shared region
+// above: `import/no-duplicates` would otherwise want it merged into that region's named import.
+import * as webpackUtil from './webpack.util';
+
 /** Webpack configuration for building WebViews */
 const configWebView: webpack.Configuration = merge(configBase, {
+  // #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/webpack.config.web-view.ts
+
   // Build for web since Platform.Bible loads WebViews in browser. Platform.Bible provides specific
   // modules that extensions may import as listed in `webpack.config.base`'s `externals`. Read more at
   // https://github.com/paranext/paranext/wiki/Module-import-restrictions
@@ -40,8 +54,16 @@ const configWebView: webpack.Configuration = merge(configBase, {
       }),
     ],
   },
+
+  // #endregion
+
+  plugins: [
+    // Lists the modules this build bundled, for third-party license notices
+    new EmitShippedModulesPlugin({
+      bundleName: 'extension-web-view',
+      outputDir: path.join(rootDir, webpackUtil.noticesManifestFolder),
+    }),
+  ],
 });
 
 export default configWebView;
-
-// #endregion
