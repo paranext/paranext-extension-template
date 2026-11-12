@@ -5,7 +5,7 @@ import CopyPlugin from 'copy-webpack-plugin';
 import configBase, { rootDir } from './webpack.config.base';
 import WebViewResolveWebpackPlugin from './web-view-resolve-webpack-plugin';
 import { EmitShippedModulesPlugin } from './emit-shipped-modules-plugin';
-import { LIBRARY_TYPE, outputFolder } from './webpack.util';
+import { LIBRARY_TYPE, noticesManifestFolder, outputFolder } from './webpack.util';
 
 /** Webpack configuration for building main */
 const configMain: webpack.Configuration = merge(configBase, {
@@ -77,7 +77,7 @@ const configMain: webpack.Configuration = merge(configBase, {
     // Lists the modules this build bundled, for third-party license notices
     new EmitShippedModulesPlugin({
       bundleName: 'extension-main',
-      outputDir: path.join(rootDir, '.notices', 'modules'),
+      outputDir: path.join(rootDir, noticesManifestFolder),
     }),
   ],
 });

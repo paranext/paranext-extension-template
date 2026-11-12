@@ -1,5 +1,7 @@
-// Copied from paranext-core's `.erb/scripts/notices-build-id.ts`, with `REPO` changed for this
-// folder layout. Keep the two in step: paranext-core's third-party notices generator reads the
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/notices-build-id.ts
+
+// The code matches paranext-core's `.erb/scripts/notices-build-id.ts` apart from how it finds the
+// manifest folder. Keep the two in step: paranext-core's third-party notices generator reads the
 // stamp this writes.
 
 /**
@@ -23,13 +25,12 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { noticesManifestFolder } from './webpack.util';
 
 const REPO = path.resolve(__dirname, '..');
 
 /** Name of the stamp file, spelled once so the writer and the reader cannot drift apart. */
 const BUILD_ID = 'build-id';
-
-const FILE = path.join(REPO, '.notices', BUILD_ID);
 
 /**
  * Where the stamp file sits relative to the module manifests.
@@ -44,6 +45,8 @@ export function buildIdFile(manifestDir: string): string {
   return path.join(manifestDir, '..', BUILD_ID);
 }
 
+const FILE = buildIdFile(path.join(REPO, noticesManifestFolder));
+
 export function main(): void {
   fs.mkdirSync(path.dirname(FILE), { recursive: true });
   const id = `${new Date().toISOString().replace(/[:.]/g, '-')}-${crypto.randomUUID()}`;
@@ -52,3 +55,5 @@ export function main(): void {
 }
 
 if (require.main === module) main();
+
+// #endregion
