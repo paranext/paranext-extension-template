@@ -35,13 +35,15 @@ function buildId(outputDir: string): string {
  * run started.
  *
  * A module webpack restores from a warm cache does not re-run its loaders, so modules a loader adds
- * while it runs (`css-loader`'s runtime helpers, for example) never reach `finishModules`, and the
- * manifest under-reports what the bundle contains. The notices generator refuses a manifest stamped
- * `cacheWarm`.
+ * to the graph while it runs never reach `finishModules`, and the manifest under-reports what the
+ * bundle contains. The notices generator refuses a manifest stamped `cacheWarm`.
  *
  * This repository's webpack configuration sets no `cache`, so this returns `false` here. It stays
  * so that an extension that adds `cache: { type: 'filesystem' }` has a warm build refused rather
- * than trusted.
+ * than trusted. Such an extension should give each configuration its own `cacheDirectory` per mode,
+ * as `extensionCacheDirectory` in paranext-core's `extensions/webpack/webpack.util.ts` does: `main`
+ * starts after `webView`, so a shared directory reads as warm even on a cold build, and a
+ * production build reads as warm after any development build.
  */
 export function isWarmFilesystemCache(cache: webpack.Configuration['cache']): boolean {
   if (!cache || typeof cache !== 'object' || cache.type !== 'filesystem') return false;
@@ -96,14 +98,14 @@ export class EmitShippedModulesPlugin {
     compiler.hooks.watchRun.tap(NAME, startRun);
 
     // The parent compilation only: webpack does not copy `thisCompilation` taps to child compilers.
-    // This repository's builds create none. The first `new Worker(new URL(...))` would add one whose
-    // output ships, and it would need tapping too; paranext-core's copy explains how to tell that
-    // kind from a child compiler whose output is thrown away.
+    // This repository's builds create none, and the modules a `new Worker(new URL(...))` pulls in
+    // stay in this compilation. A plugin or loader that runs its own child compiler compiles modules
+    // this hook never sees; if that output ships, the child compilation needs tapping too.
     compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
       compilation.hooks.finishModules.tap(NAME, (modules) => {
         // webpack declares `modules` as `Iterable<Module>`, which has no `.forEach`.
         Array.from(modules).forEach((module) => {
-          // Some module kinds (loaders, virtual modules) have no `resource`. A query string
+          // Externals (`@papi/backend`) and virtual modules have no `resource`. A query string
           // (`?inline`, `?raw`) names the same file for licensing purposes.
           const resource =
             'resource' in module && typeof module.resource === 'string'
