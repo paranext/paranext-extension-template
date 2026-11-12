@@ -1,8 +1,9 @@
-// Copied from paranext-core's `.erb/configs/emit-shipped-modules-plugin.ts`. Keep the two in step:
-// paranext-core's third-party notices generator reads the manifests this writes. The comments below
-// are kept verbatim from there, so where they describe bundles, counts or settings they describe
-// paranext-core's build; this repository's build has two bundles, extension-main and
-// extension-web-view.
+// #region shared with https://github.com/paranext/paranext-multi-extension-template/blob/main/webpack/emit-shipped-modules-plugin.ts
+
+// The code matches paranext-core's `.erb/configs/emit-shipped-modules-plugin.ts` apart from the
+// import path. Keep the two in step: paranext-core's third-party notices generator reads the
+// manifests this writes. The comments here describe this repository's build; that file's comments
+// give the full design rationale.
 
 import * as crypto from 'crypto';
 import * as fs from 'fs';
@@ -13,19 +14,13 @@ import { buildIdFile } from './notices-build-id';
 const NAME = 'EmitShippedModulesPlugin';
 
 /**
- * The identity of the build this manifest belongs to, written by `prebuild`
- * (`./notices-build-id.ts`, run as `prebuild` and `prebuild:production`) before any webpack
- * starts.
+ * The identity of the build this manifest belongs to, written by `./notices-build-id.ts` (run as
+ * `prebuild` and `prebuild:production`) before webpack starts.
  *
- * Five separate processes write the five manifests, and the notices generator unions them - so
- * without a shared stamp a set of MIXED VINTAGE is undetectable, and a stale manifest is a silent
- * under-report of what ships. `shipping-set.ts` refuses a set whose stamps disagree.
- *
- * A bundle rebuilt on its own, after the id file was written for an earlier build, still reads that
- * earlier id - which is correct only if nothing else changed, and is exactly why the remedy the
- * generator prints is a full `npm run build`. With no id file at all, each manifest gets its own
- * `unstamped-` value, which cannot match any other and so fails closed rather than passing as one
- * coherent set.
+ * The notices generator unions the `extension-main` and `extension-web-view` manifests, so it has
+ * to know they come from the same build: a stale manifest would silently leave packages out. It
+ * refuses a set whose ids disagree. With no id file, each manifest gets its own `unstamped-` value,
+ * which matches nothing, so the set is refused rather than trusted.
  */
 function buildId(outputDir: string): string {
   try {
@@ -39,72 +34,28 @@ function buildId(outputDir: string): string {
  * Whether this compiler's persistent filesystem cache directory already held content before this
  * run started.
  *
- * `finishModules` fires for every module THIS compilation's graph walks - but a module webpack
- * restores from a warm filesystem cache does not re-run its loaders, and a loader that injects new
- * modules into the graph AS PART OF running never gets the chance to add them on a cache hit.
- * `css-loader` does exactly that: it emits `require()`s for its own runtime helpers (`api.js`,
- * `getUrl.js`, `sourceMaps.js`) as it processes a stylesheet. The size of the effect on this
- * repository: a warm `webpack-renderer` cache yields 8,563 modules with those three files absent,
- * against 8,568 for a cold build of the identical source (the other two are `data:image/svg+xml`
- * inline URIs - not packages, so they do not affect the shipping set either way). The emitted
- * BUNDLE still contains the runtime code regardless - only this plugin's manifest under-reports it
+ * A module webpack restores from a warm cache does not re-run its loaders, so modules a loader adds
+ * while it runs (`css-loader`'s runtime helpers, for example) never reach `finishModules`, and the
+ * manifest under-reports what the bundle contains. The notices generator refuses a manifest stamped
+ * `cacheWarm`.
  *
- * - So this cannot be caught by diffing bundle output, only by knowing the cache's temperature at
- *   build time.
- *
- * Detected the crude-but-provable way: whether `cache.cacheDirectory` already held content when
- * this run started, checked in `beforeRun` before webpack has a chance to populate it for THIS run.
- * A directory that predates this run means SOME module in this compilation may be served from it
- * rather than rebuilt - which is precisely the condition that under-reports - so this errs toward
- * over-flagging (a warm cache whose relevant modules would have rebuilt identically anyway still
- * gets marked warm) rather than under-flagging, which is the safe direction for a legal artifact.
- * The alternative - inspecting webpack's stats for which modules were served from cache - is more
- * precise, but a check here has to be provable by making it fail and pass on purpose (see
- * `shipping-set.ts`'s refusal message and its test coverage), and directory presence is the
- * mechanism that is trivial to prove both ways.
- *
- * Only `renderer` (`.erb/configs/webpack.config.renderer.prod.ts`) and the two extension bundles
- * (`extensions/webpack/webpack.config.base.ts`, narrowed per bundle by `extensionCacheDirectory`)
- * configure a filesystem cache at all - `main` and `extension-host` set none, so
- * `compiler.options.cache` there is never `{ type: 'filesystem' }` and this is always `false` for
- * them; a single `npm run build` invocation is one process with no cross-process memory cache to be
- * warm from either.
- *
- * The directory each extension bundle watches is its OWN, per bundle and per mode. Sharing one
- * makes this answer wrong twice over: `extension-main` declares `dependencies: ['webView']`, so it
- * starts only after `extension-web-view` has written its entries and reads as warm on a genuinely
- * cold build; and a release job's production extension build inherits the development build's
- * cache, so its manifests cannot be verified at all and the per-platform check can only run against
- * the development graph. `extensionCacheDirectory` documents both.
+ * This repository's webpack configuration sets no `cache`, so this returns `false` here. It stays
+ * so that an extension that adds `cache: { type: 'filesystem' }` has a warm build refused rather
+ * than trusted.
  */
 export function isWarmFilesystemCache(cache: webpack.Configuration['cache']): boolean {
   if (!cache || typeof cache !== 'object' || cache.type !== 'filesystem') return false;
-  // webpack's own default when a filesystem cache names no directory. Reporting COLD for that is
-  // the one branch here that would draw a permissive verdict from absent information: the default
-  // directory is warm on any tree built twice, and a manifest written over it would then be trusted
-  // for a legal artifact. Nothing in this repository configures a filesystem cache without naming a
-  // directory, so this is a guard rather than a live path - but the safe answer to "which directory
-  // is this cache in?" is webpack's answer, not "there isn't one".
+  // webpack's own default when a filesystem cache names no directory. Answering cold here would
+  // trust a manifest built over a directory that is warm on any tree built twice.
   const dir = cache.cacheDirectory || path.join(process.cwd(), 'node_modules', '.cache', 'webpack');
   try {
     return fs.readdirSync(dir).length > 0;
   } catch (error: unknown) {
-    // ENOENT is the one reading failure that IS an answer: the directory was never created, so
-    // nothing can have been served from it and the build is cold.
+    // The directory was never created, so nothing can have been served from it.
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return false;
-    // Anything else - EACCES after a `sudo` or a container build, EMFILE under the five webpacks
-    // `npm run build` runs concurrently - is a directory that may well be full and simply could not
-    // be read. Answering "cold" there is a permissive verdict drawn from absent information, which
-    // is exactly what the comment above refuses for the missing-`cacheDirectory` case: the manifest
-    // would be stamped trustworthy and a module list a cache hit has shortened would go into a
-    // legal artifact.
-    //
-    // Answering "warm" is the fail-closed direction and is what happens instead of throwing:
-    // `shipping-set.ts` refuses a warm-stamped manifest set and names the reason, so a notices run
-    // still stops - while a build that never generates notices is not killed. This plugin is tapped
-    // on `beforeRun` AND `watchRun` in every extension config, so throwing here would take down
-    // `npm run build` through `concurrently --kill-others-on-fail`, or end an `npm start` watch
-    // session, over a legal artifact that run was not producing.
+    // Any other failure (`EACCES`, `EMFILE`) leaves the answer unknown. Answering warm fails closed:
+    // the generator refuses the manifest, while a build that isn't producing notices still
+    // succeeds. Throwing would fail that build, or end an `npm run watch` session.
     console.warn(
       `[${NAME}] could not read the webpack cache directory ${dir} to decide whether this build ` +
         `was served from a warm cache (${error instanceof Error ? error.message : String(error)}). ` +
@@ -116,22 +67,16 @@ export function isWarmFilesystemCache(cache: webpack.Configuration['cache']): bo
 }
 
 /**
- * Writes the list of modules webpack actually compiled into a bundle.
+ * Writes the list of modules webpack compiled into a bundle to `<outputDir>/<bundleName>.json`.
  *
- * The notices generator needs to know which npm packages ship. Package manifests cannot answer that
+ * Bundling erases package boundaries, so neither `package.json` (bundled packages are
+ * `devDependencies`) nor a scan of the output can say which npm packages ship. The compiler knows.
  *
- * - Bundled dependencies live in `devDependencies` by convention, because webpack compiles them in at
- *   build time - and post-build SBOM scanners cannot either, because bundling erases package
- *   boundaries. The compiler already knows exactly, so it reports rather than being inferred.
+ * Hooks `finishModules` rather than reading `compilation.modules` at emit time: by then module
+ * concatenation has merged modules into wrappers whose contents are not directly enumerable.
  *
- * Hooks `finishModules` rather than iterating `compilation.modules` at emit time: by emit,
- * ModuleConcatenationPlugin has merged modules into ConcatenatedModule wrappers whose inner modules
- * are not directly enumerable. `finishModules` fires while every NormalModule is still its own
- * entry.
- *
- * Also stamps `cacheWarm` (see `isWarmFilesystemCache`) so `shipping-set.ts` can refuse a manifest
- * set that may have been silently under-reported by a warm persistent cache, the same way it
- * already refuses one whose `buildId`s disagree.
+ * Also stamps the build id (see `buildId`), the webpack mode and `cacheWarm` (see
+ * `isWarmFilesystemCache`), which the generator checks before trusting the list.
  */
 export class EmitShippedModulesPlugin {
   constructor(private options: { bundleName: string; outputDir: string }) {}
@@ -140,13 +85,9 @@ export class EmitShippedModulesPlugin {
     const resources = new Set<string>();
     let cacheWarm = false;
 
-    // Both hooks, and both reset the accumulated set: `beforeRun` fires for a one-shot `webpack`
-    // run and `watchRun` for every rebuild in watch mode, which `npm start` and the extensions'
-    // `npm run watch` use. Tapping only `beforeRun` leaves watch builds stamped `cacheWarm: false`
-    // for exactly the builds guaranteed to be warm, and leaves `resources` accumulating across every
-    // rebuild in the compiler's lifetime - so a module deleted from the source tree stays in the
-    // manifest until the watcher restarts, over-reporting the shipping set or failing the
-    // generator's unresolved-module check on a directory that is legitimately gone.
+    // `beforeRun` fires for a one-shot build and `watchRun` for every rebuild under `npm run watch`
+    // or `npm start`. Both reset the list, so a module deleted from the source leaves the manifest
+    // on the next rebuild.
     const startRun = () => {
       resources.clear();
       cacheWarm = isWarmFilesystemCache(compiler.options.cache);
@@ -154,37 +95,16 @@ export class EmitShippedModulesPlugin {
     compiler.hooks.beforeRun.tap(NAME, startRun);
     compiler.hooks.watchRun.tap(NAME, startRun);
 
-    // The PARENT compilation only, which is what `thisCompilation` means: `createChildCompiler`
-    // copies every hook's taps to the child EXCEPT the six webpack names in its exclusion list, and
-    // `thisCompilation` is on that list while `compilation` is not. A child compiler runs its
-    // own module graph that this hook never sees, and two kinds exist in webpack: one whose output
-    // ships (`new Worker(new URL(…))`) and one whose output is executed at build time and thrown
-    // away (`HtmlWebpackPlugin`, which compiles `src/renderer/index.ejs` to a function that emits
-    // the HTML). Tapping children indiscriminately would put the second kind's packages into a
-    // legal document as things this project redistributes, which is the same error as omitting the
-    // first kind, inverted.
-    //
-    // Measured across all five bundles: `main`, `extension-host`, `extension-main` and
-    // `extension-web-view` create no child compilers at all, and `renderer` creates exactly one -
-    // `HtmlWebpackCompiler`, whose entire graph is two modules, a `data:` URI and this
-    // repository's own `index.ejs`. Neither is an installed package, so today children contribute
-    // nothing the parent graph does not already carry and none of them ship.
-    //
-    // What changes that: the first `new Worker(new URL('./x', import.meta.url))` in this codebase.
-    // Its child compilation DOES ship, and it would need tapping - excluding `HtmlWebpackCompiler`
-    // by the name the `childCompiler` hook passes.
+    // The parent compilation only: webpack does not copy `thisCompilation` taps to child compilers.
+    // This repository's builds create none. The first `new Worker(new URL(...))` would add one whose
+    // output ships, and it would need tapping too; paranext-core's copy explains how to tell that
+    // kind from a child compiler whose output is thrown away.
     compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
       compilation.hooks.finishModules.tap(NAME, (modules) => {
-        // `Iterable<Module>`, not an array: webpack passes a Set at runtime, so `.forEach` happens
-        // to work, but the declared type carries no such method. `Array.from` is what that type
-        // supports, and keeps the array-iteration style this repo's `no-restricted-syntax` rule
-        // requires.
+        // webpack declares `modules` as `Iterable<Module>`, which has no `.forEach`.
         Array.from(modules).forEach((module) => {
-          // A narrowing check rather than `module as webpack.NormalModule`: this repo bans type
-          // assertions (`no-type-assertion/no-type-assertion`), and `resource` is genuinely absent
-          // on some module kinds, so narrowing is also the more honest expression of the fact.
-          // Loaders and virtual modules have no resource. Query strings distinguish `?inline` and
-          // `?raw` variants of the same file, which are the same file for licensing purposes.
+          // Some module kinds (loaders, virtual modules) have no `resource`. A query string
+          // (`?inline`, `?raw`) names the same file for licensing purposes.
           const resource =
             'resource' in module && typeof module.resource === 'string'
               ? module.resource
@@ -195,13 +115,10 @@ export class EmitShippedModulesPlugin {
     });
 
     compiler.hooks.done.tap(NAME, (stats) => {
-      // `done` fires whether or not the compilation succeeded, and a failed compilation's module
-      // graph is whatever the compiler has walked when it gives up. Writing that would stamp a
-      // PARTIAL list with the current build id, which passes both of the generator's guards - the
-      // stamps agree (one id) and the list is non-empty - and silently shortens the shipping set.
-      // `concurrently --kill-others-on-fail` makes this reachable on any failed `npm run build`.
-      // Leaving the previous manifest in place instead fails closed: it carries an earlier build
-      // id, which the mixed-vintage check reports with the remedy that rebuilds everything.
+      // `done` fires for a failed compilation too, with whatever part of the graph webpack reached.
+      // Writing that would record a partial list under the current build id, which the generator
+      // could not tell from a complete one. The previous manifest is left in place instead; its
+      // earlier build id makes the generator refuse the set.
       if (stats.hasErrors()) {
         console.log(
           `${NAME}: compilation failed, so no manifest was written for ${this.options.bundleName}`,
@@ -212,21 +129,15 @@ export class EmitShippedModulesPlugin {
       fs.mkdirSync(outputDir, { recursive: true });
       const out = path.join(outputDir, `${bundleName}.json`);
       const build = buildId(outputDir);
-      // Staged and renamed, like the artifact and lock `main.ts` writes: five of these are written
-      // concurrently and read by a separate process, and a reader that catches one mid-write gets a
-      // bare `SyntaxError` naming no file rather than a manifest.
+      // Written to a temporary file and renamed: the generator reads this from another process, and
+      // a half-written file would fail there with a bare `SyntaxError` that names no file.
       const tmp = `${out}.tmp`;
       const contents = `${JSON.stringify(
         {
           bundle: bundleName,
           buildId: build,
-          // The webpack MODE this graph came from. A release job builds the extensions twice from
-          // one commit - development through `npm run build`, then production - and the second run
-          // OVERWRITES the two extension manifests while the three core ones (always production)
-          // stay put. The build id cannot see that substitution: `prebuild` fires only for the root
-          // `build`, so the production run re-stamps the same id and the mixed-vintage check finds
-          // one stamp on a genuinely mixed set. The mode is the fact that actually differs, so it
-          // is the one recorded.
+          // The generator trusts only production manifests, which `npm run package` writes.
+          // `npm run build` writes development ones.
           mode: compiler.options.mode || 'none',
           cacheWarm,
           modules: [...resources].sort(),
@@ -234,11 +145,7 @@ export class EmitShippedModulesPlugin {
         undefined,
         2,
       )}\n`;
-      // `watchRun` fires for every rebuild, and the five manifests together are the better part of a
-      // megabyte of JSON - almost all of it the renderer's 8,500 module paths, which do not move
-      // when a developer edits one component. Comparing first turns the ordinary `npm start` edit
-      // loop into a read instead of a write. It is not a correctness shortcut: identical content
-      // means an identical manifest, so a rebuild that changes what ships still writes.
+      // A watch rebuild that ships the same modules leaves the file untouched.
       let existing;
       try {
         existing = fs.readFileSync(out, 'utf8');
@@ -254,3 +161,5 @@ export class EmitShippedModulesPlugin {
     });
   }
 }
+
+// #endregion
