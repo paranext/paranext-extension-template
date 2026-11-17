@@ -14,12 +14,13 @@
  *
  * Run as both `prebuild` and `prebuild:production`. npm runs a `pre` script only for the script of
  * the same name, and `npm run package` calls `build:production`, so a `prebuild` alone would never
- * run before a packaged build. When this file is absent the plugin stamps each manifest with its
- * own `unstamped-` value, the manifests disagree, and the generator refuses them.
+ * run before a packaged build. When the stamp file (`.notices/build-id`) is absent the plugin
+ * stamps each manifest with its own `unstamped-` value, the manifests disagree, and the generator
+ * refuses them.
  *
- * What this does NOT catch: the file persists between builds, so building one configuration on its
- * own afterwards (`npm run build:main`) re-stamps its manifest with the same id. Package with `npm
- * run package`, which runs this first.
+ * What this does NOT catch: the stamp file persists between builds, so building one configuration
+ * on its own afterwards (`npm run build:main`) re-stamps its manifest with the same id. Package
+ * with `npm run package`, which runs this first.
  */
 
 import * as crypto from 'crypto';

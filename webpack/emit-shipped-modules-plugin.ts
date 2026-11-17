@@ -31,25 +31,29 @@ function buildId(outputDir: string): string {
 }
 
 /**
- * Whether this compiler's persistent filesystem cache directory already held content before this
- * run started.
+ * Whether this compiler's persistent filesystem cache already held content before this run started.
  *
  * A module webpack restores from a warm cache does not re-run its loaders, so modules a loader adds
  * to the graph while it runs never reach `finishModules`, and the manifest under-reports what the
  * bundle contains. The notices generator refuses a manifest stamped `cacheWarm`.
  *
+ * The directory inspected is `cacheLocation`, where webpack stores the cache. Unless a
+ * configuration sets it, webpack fills it in before the build starts as
+ * `<cacheDirectory>/<name>-<mode>`, so each configuration and mode has its own.
+ *
  * This repository's webpack configuration sets no `cache`, so this returns `false` here. It stays
  * so that an extension that adds `cache: { type: 'filesystem' }` has a warm build refused rather
- * than trusted. Such an extension should give each configuration its own `cacheDirectory` per mode,
- * as `extensionCacheDirectory` in paranext-core's `extensions/webpack/webpack.util.ts` does: `main`
- * starts after `webView`, so a shared directory reads as warm even on a cold build, and a
- * production build reads as warm after any development build.
+ * than trusted.
  */
 export function isWarmFilesystemCache(cache: webpack.Configuration['cache']): boolean {
   if (!cache || typeof cache !== 'object' || cache.type !== 'filesystem') return false;
-  // webpack's own default when a filesystem cache names no directory. Answering cold here would
-  // trust a manifest built over a directory that is warm on any tree built twice.
-  const dir = cache.cacheDirectory || path.join(process.cwd(), 'node_modules', '.cache', 'webpack');
+  // The last fallback is webpack's own default directory, for a cache object webpack has not filled
+  // in. Answering cold there would trust a manifest built over a directory that is warm on any tree
+  // built twice.
+  const dir =
+    cache.cacheLocation ||
+    cache.cacheDirectory ||
+    path.join(process.cwd(), 'node_modules', '.cache', 'webpack');
   try {
     return fs.readdirSync(dir).length > 0;
   } catch (error: unknown) {
@@ -117,19 +121,19 @@ export class EmitShippedModulesPlugin {
     });
 
     compiler.hooks.done.tap(NAME, (stats) => {
+      const { bundleName, outputDir } = this.options;
+      const out = path.join(outputDir, `${bundleName}.json`);
       // `done` fires for a failed compilation too, with whatever part of the graph webpack reached.
       // Writing that would record a partial list under the current build id, which the generator
-      // could not tell from a complete one. The previous manifest is left in place instead; its
-      // earlier build id makes the generator refuse the set.
+      // could not tell from a complete one. The previous manifest is removed instead, so the
+      // generator refuses the set for a missing bundle. Keeping it would not do: under `npm run
+      // watch:production` the id file is written once per session, so an earlier manifest from the
+      // same session carries the same id as its sibling's new one.
       if (stats.hasErrors()) {
-        console.log(
-          `${NAME}: compilation failed, so no manifest was written for ${this.options.bundleName}`,
-        );
+        fs.rmSync(out, { force: true });
+        console.log(`${NAME}: compilation failed, so ${out} was removed rather than rewritten`);
         return;
       }
-      const { bundleName, outputDir } = this.options;
-      fs.mkdirSync(outputDir, { recursive: true });
-      const out = path.join(outputDir, `${bundleName}.json`);
       const build = buildId(outputDir);
       // Written to a temporary file and renamed: the generator reads this from another process, and
       // a half-written file would fail there with a bare `SyntaxError` that names no file.
@@ -155,8 +159,27 @@ export class EmitShippedModulesPlugin {
         existing = undefined;
       }
       if (existing === contents) return;
-      fs.writeFileSync(tmp, contents);
-      fs.renameSync(tmp, out);
+      try {
+        fs.mkdirSync(outputDir, { recursive: true });
+        fs.writeFileSync(tmp, contents);
+        fs.renameSync(tmp, out);
+      } catch (error: unknown) {
+        // Most builds produce no notices, so a manifest that cannot be written (a locked or
+        // read-only `.notices`, a full disk) must not fail the build or end an `npm run watch`
+        // session. Whatever was there is removed, since an old manifest may carry the current build
+        // id; the generator then refuses the set for a missing bundle.
+        console.warn(
+          `[${NAME}] could not write ${out} (${error instanceof Error ? error.message : String(error)}). ` +
+            'No manifest was written for this bundle, so the notices generator will refuse this build.',
+        );
+        try {
+          fs.rmSync(out, { force: true });
+          fs.rmSync(tmp, { force: true });
+        } catch {
+          // Nothing more can be done; the warning above already says the manifest is unusable.
+        }
+        return;
+      }
       console.log(
         `${NAME}: wrote ${resources.size} module paths to ${out} (build ${build}${cacheWarm ? ', warm cache' : ''})`,
       );
