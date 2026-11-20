@@ -6,15 +6,33 @@ inputs:
   newVersion:
     description: "Version to bump all the repo's versions to on a new branch (called `bump-versions-<version>`), e.g. 0.3.0-alpha.0."
     required: true
+  token:
+    description: 'Token used to push the new branch. Needs `contents: write` on this repo.'
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: 'composite'
   steps:
     - name: Bump repo versions
-      # Bump versions using the built-in git token https://github.com/actions/checkout/tree/v4/?tab=readme-ov-file#push-a-commit-using-the-built-in-token
+      # Callers check out with `persist-credentials: false` so scripts from other repos run earlier in
+      # the job cannot read a write token from the git config. The push credential is passed through
+      # GIT_CONFIG_* environment variables instead, so it exists only for this step and is never
+      # written to disk. The empty first value clears any header a checkout did persist, which would
+      # otherwise be sent alongside this one.
       shell: bash
+      env:
+        TOKEN: ${{ inputs.token }}
       run: |
         cd ${GITHUB_ACTION_PATH}/../../..
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        basic_auth="$(printf 'x-access-token:%s' "$TOKEN" | base64 | tr -d '\n')"
+        export GIT_CONFIG_COUNT=2
+        export GIT_CONFIG_KEY_0="http.${GITHUB_SERVER_URL}/.extraheader"
+        export GIT_CONFIG_VALUE_0=""
+        export GIT_CONFIG_KEY_1="$GIT_CONFIG_KEY_0"
+        export GIT_CONFIG_VALUE_1="AUTHORIZATION: basic $basic_auth"
+
         npm run bump-versions -- ${{ inputs.newVersion }}
